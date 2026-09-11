@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Sparkles,
   Tv,
+  Layers,
   Settings2,
 } from "lucide-react";
 import { useSceneConfig, useTimer, useLayoutEditMode, useWidgetPositions, useSnapEnabled, useActiveTheme, SCENE_LIST, sceneToSlug } from "../store/useBroadcast";
@@ -104,6 +105,7 @@ function MiniFeedCopy({ label, path }: { label: string; path: string }) {
 
 export function ConfigPanel({ scene }: { scene: SceneId }) {
   const [activeTab, setActiveTab] = useState<InspectorTab>("design");
+  const [outputMode, setOutputMode] = useState<"single" | "individual">("single");
   const cfg = useSceneConfig(scene);
   const schema = SCENE_SCHEMA[scene];
   const meta = SCENE_LIST.find((s) => s.id === scene)!;
@@ -452,16 +454,84 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
               transition={{ duration: 0.18 }}
               className="space-y-6"
             >
-              {/* Quick OBS Feeds for this Scene */}
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--nc-text-3)]">
-                  <Radio size={12} color="var(--nc-accent)" />
-                  <span>OBS Browser Source Feeds</span>
+              {/* OBS Browser Source Output Options */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--nc-accent)]">
+                    <Radio size={13} />
+                    <span>OBS Output Options</span>
+                  </div>
+                  <span className="text-[10.5px] font-mono text-[var(--nc-text-3)]">1080p · 60fps</span>
                 </div>
-                <div className="space-y-2">
-                  <MiniFeedCopy label="Program Feed (Auto-Switch)" path={`/output?theme=${activeTheme}`} />
-                  <MiniFeedCopy label={`${meta.label} Fixed Feed`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
-                  <MiniFeedCopy label="Transparent Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
+
+                {/* Output Mode Switcher: Single Link vs Each Scene Gets a Link */}
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-black/40 border border-white/10 gap-1 text-xs font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setOutputMode("single")}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg transition-all cursor-pointer ${
+                      outputMode === "single"
+                        ? "bg-[var(--nc-primary)] text-black font-bold shadow-md"
+                        : "text-[var(--nc-text-2)] hover:text-white"
+                    }`}
+                  >
+                    <Layers size={12} />
+                    <span>Single Link (All)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOutputMode("individual")}
+                    className={`flex items-center justify-center gap-1.5 py-2 px-1 rounded-lg transition-all cursor-pointer ${
+                      outputMode === "individual"
+                        ? "bg-[var(--nc-primary)] text-black font-bold shadow-md"
+                        : "text-[var(--nc-text-2)] hover:text-white"
+                    }`}
+                  >
+                    <Tv size={12} />
+                    <span>Each Scene Link</span>
+                  </button>
+                </div>
+
+                {/* MODE A: Single Link for all scenes (Auto-Switch) */}
+                {outputMode === "single" ? (
+                  <div className="p-3.5 rounded-xl border border-[var(--nc-line-brand)] bg-[rgba(79,140,255,0.06)] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[var(--nc-highlight)]">
+                        Master Program Feed
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[var(--nc-accent)]/15 text-[var(--nc-accent)] border border-[var(--nc-accent)]/30">
+                        ★ Auto-Switching
+                      </span>
+                    </div>
+                    <p className="text-[11.5px] text-[var(--nc-text-2)] leading-relaxed">
+                      Add <strong>only 1 Browser Source</strong> to OBS. When you switch scenes in this control panel, OBS automatically switches the overlay with smooth animated transitions.
+                    </p>
+                    <MiniFeedCopy label="Master Single Link (All Scenes)" path={`/output?theme=${activeTheme}`} />
+                  </div>
+                ) : (
+                  /* MODE B: Each scene gets its own dedicated link */
+                  <div className="space-y-2.5">
+                    <p className="text-[11px] text-[var(--nc-text-3)] leading-relaxed px-0.5">
+                      Each scene has its own dedicated link. Add each link as an independent Browser Source in its corresponding OBS scene:
+                    </p>
+                    <div className="space-y-1.5">
+                      {SCENE_LIST.map((s) => (
+                        <MiniFeedCopy
+                          key={s.id}
+                          label={`${s.label} (${s.index})`}
+                          path={`/output/${s.slug}?theme=${activeTheme}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Standalone Widgets Link */}
+                <div className="pt-2 border-t border-[var(--nc-line)] space-y-1.5">
+                  <span className="text-[10.5px] font-bold uppercase tracking-wider text-[var(--nc-text-3)] block">
+                    Transparent Standalone Widgets
+                  </span>
+                  <MiniFeedCopy label="Standalone Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
                 </div>
               </div>
 

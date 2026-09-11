@@ -413,7 +413,7 @@ export function Editor() {
             </span>
           </div>
 
-          {/* Bottom Dock — Compact OBS Browser Feeds Drawer */}
+          {/* Bottom Dock — OBS Output Options Drawer (Single Link vs Each Scene Link) */}
           <div
             className="shrink-0 rounded-xl border border-[var(--nc-line)] transition-all overflow-hidden"
             style={{ background: "var(--nc-panel)" }}
@@ -423,11 +423,11 @@ export function Editor() {
               <div className="flex items-center gap-2.5">
                 <Radio size={13} color="var(--nc-accent)" />
                 <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--nc-highlight)]">
-                  OBS Browser Sources
+                  OBS Outputs:
                 </span>
-                <div className="hidden sm:flex items-center gap-1.5 ml-2">
-                  <QuickCopyChip label="Copy Program Feed" path={`/output?theme=${activeTheme}`} />
-                  <QuickCopyChip label={`Copy ${SCENE_LIST.find((s) => s.id === active)!.label}`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
+                <div className="hidden sm:flex items-center gap-2 ml-1">
+                  <QuickCopyChip label="★ Copy Single Link (All Scenes)" path={`/output?theme=${activeTheme}`} />
+                  <QuickCopyChip label={`Copy Current (${SCENE_LIST.find((s) => s.id === active)!.label})`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
                   <QuickCopyChip label="Copy Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
                 </div>
               </div>
@@ -437,12 +437,12 @@ export function Editor() {
                 onClick={() => setObsShelfOpen((v) => !v)}
                 className="flex items-center gap-1.5 text-xs font-semibold text-[var(--nc-text-3)] hover:text-white cursor-pointer px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
               >
-                <span>{obsShelfOpen ? "Hide URLs" : "View Full URLs"}</span>
+                <span>{obsShelfOpen ? "Hide Options" : "View All Links (5 Scenes)"}</span>
                 {obsShelfOpen ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
               </button>
             </div>
 
-            {/* Expandable Full URLs Cards */}
+            {/* Expandable Output Options Drawer */}
             <AnimatePresence>
               {obsShelfOpen && (
                 <motion.div
@@ -450,12 +450,49 @@ export function Editor() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden border-t border-[var(--nc-line)] p-3"
+                  className="overflow-hidden border-t border-[var(--nc-line)] p-3 space-y-3.5"
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                    <UrlRow label="Program Feed (Auto-Switch)" path={`/output?theme=${activeTheme}`} />
-                    <UrlRow label={`${SCENE_LIST.find((s) => s.id === active)!.label} Feed`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
-                    <UrlRow label="Standalone Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
+                  {/* Option 1: Single Master Link */}
+                  <div className="p-3 rounded-xl border border-[var(--nc-line-brand)] bg-[rgba(79,140,255,0.06)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-[var(--nc-highlight)]">
+                          Option 1: Single Link for All Scenes (Master Program Feed)
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[var(--nc-accent)]/15 text-[var(--nc-accent)] border border-[var(--nc-accent)]/30">
+                          ★ Recommended
+                        </span>
+                      </div>
+                      <span className="text-[11.5px] text-[var(--nc-text-2)]">
+                        Add only 1 Browser Source to OBS. As you switch scenes in this control panel, OBS automatically switches overlays with smooth animated transitions.
+                      </span>
+                    </div>
+                    <div className="shrink-0">
+                      <QuickCopyChip label="Copy Single Master Link" path={`/output?theme=${activeTheme}`} />
+                    </div>
+                  </div>
+
+                  {/* Option 2: Each Scene Gets Its Own Link */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--nc-text-3)]">
+                        Option 2: Individual Scene Links (Each Scene Gets Its Own Link)
+                      </span>
+                      <span className="text-[11px] text-[var(--nc-text-3)]">
+                        For multi-scene OBS collections
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      {SCENE_LIST.map((s) => (
+                        <UrlRow
+                          key={s.id}
+                          label={`${s.label} (${s.index})`}
+                          path={`/output/${s.slug}?theme=${activeTheme}`}
+                        />
+                      ))}
+                      <UrlRow label="Standalone Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
+                    </div>
                   </div>
                 </motion.div>
               )}
