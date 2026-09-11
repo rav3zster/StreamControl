@@ -1,6 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Copy, ExternalLink, Check, Radio, Lock, Unlock, Move, RotateCcw, Magnet, Palette } from "lucide-react";
+import {
+  Copy,
+  ExternalLink,
+  Check,
+  Radio,
+  Lock,
+  Unlock,
+  Move,
+  RotateCcw,
+  Magnet,
+  Palette,
+  ChevronDown,
+  ChevronUp,
+  Tv,
+  Share2,
+  Sparkles,
+} from "lucide-react";
 import { CanvasStage } from "../components/overlay/CanvasStage";
 import { Wordmark } from "../components/overlay/primitives";
 import { SceneView } from "../output/SceneView";
@@ -9,12 +25,11 @@ import { useBroadcastState, SCENE_LIST, sceneToSlug, THEMES, THEME_LIST, type Th
 import { store } from "../store/broadcastStore";
 
 // ============================================================================
-// Editor — the Broadcast Control Panel.
-//   LEFT   · Scene navigation (one active at a time)
-//   CENTER · Clean 1920×1080 Program preview — ONLY what viewers see
-//   RIGHT  · Scene Configuration Panel (data-driven, per scene)
-// The editor never renders controls inside the canvas; it mutates shared state
-// that the output feeds (OBS Browser Sources) subscribe to and reflect live.
+// Editor — Industry-Grade Broadcast Control Center.
+//   LEFT   · Scene Director (Keyboard shortcuts 1-5, clean on-air cues)
+//   CENTER · Studio Program Monitor (Maximized 16:9 canvas with responsive scaling,
+//            compact collapsible OBS dock, studio framing)
+//   RIGHT  · 4-Tab Scene Inspector (Design, Content, Widgets, Broadcast)
 // ============================================================================
 
 function feedUrl(path: string) {
@@ -35,30 +50,66 @@ function UrlRow({ label, path }: { label: string; path: string }) {
     }
   };
   const iconBtn: React.CSSProperties = {
-    width: 30,
-    height: 30,
-    borderRadius: 9,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "rgba(255,255,255,0.03)",
+    background: "rgba(255,255,255,0.04)",
     border: "1px solid var(--nc-line-strong)",
     color: "var(--nc-text-2)",
     cursor: "pointer",
   };
   return (
-    <div className="flex items-center gap-2.5" style={{ padding: "9px 11px", borderRadius: 11, background: "var(--nc-panel)", border: "1px solid var(--nc-line)" }}>
+    <div className="flex items-center gap-2 p-2.5 rounded-xl border border-[var(--nc-line)] bg-[var(--nc-panel)] shadow-sm">
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.16em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>{label}</span>
-        <span className="truncate" style={{ fontSize: 12, color: "var(--nc-text)", fontVariantNumeric: "tabular-nums" }}>{url}</span>
+        <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.16em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>
+          {label}
+        </span>
+        <span className="truncate font-mono" style={{ fontSize: 11.5, color: "var(--nc-text)" }}>
+          {url}
+        </span>
       </div>
-      <button aria-label="Copy URL" onClick={copy} style={iconBtn}>
-        {copied ? <Check size={13} color="var(--nc-accent)" /> : <Copy size={13} />}
+      <button aria-label="Copy URL" onClick={copy} style={iconBtn} title="Copy URL">
+        {copied ? <Check size={12} color="var(--nc-accent)" /> : <Copy size={12} />}
       </button>
-      <a aria-label="Open feed" href={url} target="_blank" rel="noreferrer" style={iconBtn}>
-        <ExternalLink size={13} />
+      <a aria-label="Open feed" href={url} target="_blank" rel="noreferrer" style={iconBtn} title="Open in new window">
+        <ExternalLink size={12} />
       </a>
     </div>
+  );
+}
+
+function QuickCopyChip({ label, path }: { label: string; path: string }) {
+  const [copied, setCopied] = useState(false);
+  const url = feedUrl(path);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard blocked */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      title={`Click to copy: ${url}`}
+      className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer border"
+      style={{
+        background: copied ? "rgba(0, 229, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
+        borderColor: copied ? "var(--nc-accent)" : "var(--nc-line-strong)",
+        color: copied ? "var(--nc-accent)" : "var(--nc-text-2)",
+      }}
+    >
+      {copied ? <Check size={11} /> : <Copy size={11} className="opacity-70" />}
+      <span>{label}</span>
+    </button>
   );
 }
 
@@ -71,20 +122,54 @@ export function Editor() {
   const scenePositions = state.widgetPositions[active] ?? {};
   const movedWidgetCount = Object.keys(scenePositions).length;
 
+  // Collapsible OBS Sources shelf state
+  const [obsShelfOpen, setObsShelfOpen] = useState(false);
+
+  // Global Keyboard Shortcuts (1-5 for scenes, M for move, S for snap)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Do not trigger if typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
+        return;
+      }
+
+      if (e.key >= "1" && e.key <= "5") {
+        const idx = parseInt(e.key, 10) - 1;
+        if (SCENE_LIST[idx]) {
+          store.setActiveScene(SCENE_LIST[idx].id);
+        }
+      } else if (e.key.toLowerCase() === "m") {
+        store.toggleLayoutEditMode();
+      } else if (e.key.toLowerCase() === "s") {
+        store.toggleSnap();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <div className="flex h-screen w-full flex-col" style={{ background: "#050609", fontFamily: "var(--nc-font)", color: "var(--nc-text)" }}>
-      {/* top bar */}
-      <header className="flex shrink-0 items-center justify-between px-6" style={{ height: 56, borderBottom: "1px solid var(--nc-line)", background: "var(--nc-bg)" }}>
-        <div className="flex items-center gap-4">
-          <Wordmark size={32} />
-          <span style={{ width: 1, height: 20, background: "var(--nc-line)" }} />
-          <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.16em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>
-            Broadcast Control Panel
-          </span>
+    <div className="flex h-screen w-full flex-col overflow-hidden" style={{ background: "#050609", fontFamily: "var(--nc-font)", color: "var(--nc-text)" }}>
+      {/* 1. MASTER HEADER BAR */}
+      <header className="flex shrink-0 items-center justify-between px-5" style={{ height: 52, borderBottom: "1px solid var(--nc-line)", background: "var(--nc-bg)" }}>
+        <div className="flex items-center gap-3.5">
+          <Wordmark size={30} />
+          <span style={{ width: 1, height: 18, background: "var(--nc-line)" }} />
+          <div className="flex items-center gap-2">
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>
+              Studio Control
+            </span>
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono text-[var(--nc-accent)] bg-[var(--nc-accent)]/10 border border-[var(--nc-accent)]/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--nc-accent)] animate-pulse" />
+              v2.1 LIVE
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Quick Theme Selector in Top Bar */}
+        <div className="flex items-center gap-3">
+          {/* Theme Selector */}
           <div
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold"
             style={{
@@ -92,7 +177,7 @@ export function Editor() {
               borderColor: "var(--nc-line-strong)",
             }}
           >
-            <Palette size={13} color="var(--nc-primary)" />
+            <Palette size={12} color="var(--nc-primary)" />
             <span style={{ color: "var(--nc-text-3)", fontSize: 11 }}>Theme:</span>
             <select
               value={activeTheme}
@@ -107,176 +192,278 @@ export function Editor() {
               ))}
             </select>
             <span
-              className="w-2.5 h-2.5 rounded-full border border-black/50 ml-1"
+              className="w-2.5 h-2.5 rounded-full border border-black/50 ml-0.5"
               style={{ background: activeThemeDef.swatches[0] }}
             />
           </div>
 
-          {/* Toggle Moveable Layout Button */}
+          {/* Toggle Move Layout Mode Button */}
           <button
             type="button"
             onClick={() => store.toggleLayoutEditMode()}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
             style={{
               background: state.layoutEditMode ? "rgba(79, 140, 255, 0.16)" : "rgba(255, 255, 255, 0.04)",
               border: state.layoutEditMode ? "1px solid var(--nc-primary)" : "1px solid var(--nc-line-strong)",
               color: state.layoutEditMode ? "var(--nc-highlight)" : "var(--nc-text-2)",
               boxShadow: state.layoutEditMode ? "0 0 14px rgba(79, 140, 255, 0.35)" : "none",
             }}
+            title="Press 'M' to toggle layout movement"
           >
             {state.layoutEditMode ? (
               <>
-                <Unlock size={13} color="var(--nc-primary)" />
+                <Unlock size={12} color="var(--nc-primary)" />
                 <span>Move Layout: <strong style={{ color: "var(--nc-primary)" }}>ON</strong></span>
               </>
             ) : (
               <>
-                <Lock size={13} />
+                <Lock size={12} />
                 <span>Move Layout: <strong style={{ color: "var(--nc-text-3)" }}>OFF</strong></span>
               </>
             )}
           </button>
-
-          <span style={{ fontSize: 12, color: "var(--nc-text-3)", letterSpacing: "0.08em" }}>1920 × 1080 · 16:9</span>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
-        {/* LEFT — scene navigation */}
-        <nav className="flex shrink-0 flex-col gap-1.5 overflow-y-auto p-3" style={{ width: 240, borderRight: "1px solid var(--nc-line)", background: "var(--nc-bg)" }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.2em", color: "var(--nc-text-3)", padding: "8px 12px 4px", textTransform: "uppercase" }}>
-            Scenes
-          </span>
-          {SCENE_LIST.map((s) => {
+      {/* 2. MAIN WORKSPACE (LEFT NAV, CENTER STAGE, RIGHT INSPECTOR) */}
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* LEFT — Scene Director */}
+        <nav className="flex shrink-0 flex-col gap-1 overflow-y-auto p-3" style={{ width: 220, borderRight: "1px solid var(--nc-line)", background: "var(--nc-bg)" }}>
+          <div className="flex items-center justify-between px-3 py-2 text-[10.5px] font-bold tracking-widest text-[var(--nc-text-3)] uppercase">
+            <span>Scenes</span>
+            <span className="text-[9px] font-mono text-[var(--nc-text-3)]/70">Keys 1-5</span>
+          </div>
+
+          {SCENE_LIST.map((s, idx) => {
             const isActive = s.id === active;
             return (
               <button
                 key={s.id}
                 onClick={() => store.setActiveScene(s.id)}
-                className="flex w-full items-center gap-3 text-left transition-colors"
-                style={{ padding: "11px 12px", borderRadius: 12, background: isActive ? "var(--nc-panel)" : "transparent", border: `1px solid ${isActive ? "var(--nc-line-strong)" : "transparent"}` }}
+                className="group flex w-full items-center gap-2.5 text-left transition-all cursor-pointer rounded-xl px-3 py-2.5"
+                style={{
+                  background: isActive ? "var(--nc-panel)" : "transparent",
+                  border: `1px solid ${isActive ? "var(--nc-line-brand)" : "transparent"}`,
+                  boxShadow: isActive ? "0 4px 12px rgba(0,0,0,0.3)" : "none",
+                }}
               >
-                <span style={{ fontSize: 11, fontWeight: 700, fontVariantNumeric: "tabular-nums", letterSpacing: "0.06em", color: isActive ? "var(--nc-primary)" : "var(--nc-text-3)" }}>{s.index}</span>
-                <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? "var(--nc-highlight)" : "var(--nc-text-2)" }}>{s.label}</span>
+                <span
+                  className="flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold font-mono transition-colors"
+                  style={{
+                    background: isActive ? "var(--nc-primary)" : "rgba(255, 255, 255, 0.05)",
+                    color: isActive ? "#000" : "var(--nc-text-3)",
+                  }}
+                >
+                  {idx + 1}
+                </span>
+
+                <span
+                  style={{
+                    fontSize: 13.5,
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? "var(--nc-highlight)" : "var(--nc-text-2)",
+                  }}
+                >
+                  {s.label}
+                </span>
+
                 {isActive && (
                   <span className="ml-auto flex items-center gap-1.5">
-                    <Radio size={12} color="var(--nc-accent)" />
-                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.14em", color: "var(--nc-accent)" }}>ON AIR</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--nc-accent)] animate-ping" />
+                    <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.12em", color: "var(--nc-accent)" }}>
+                      LIVE
+                    </span>
                   </span>
                 )}
               </button>
             );
           })}
 
-          <div className="mt-auto px-3 pb-1" style={{ fontSize: 11, color: "var(--nc-text-3)", lineHeight: 1.6 }}>
-            <span style={{ color: "var(--nc-text-2)", fontWeight: 600 }}>AXIOM Pack</span>
-            <br />
-            Broadcast engine · v2.1
+          <div className="mt-auto p-3 rounded-xl border border-[var(--nc-line)] bg-white/[0.02] text-[11px] text-[var(--nc-text-3)]">
+            <span className="font-semibold text-[var(--nc-text-2)] block mb-0.5">AXIOM Pro Overlay</span>
+            <span className="text-[10px] block leading-tight">Broadcast-Grade Engine for OBS Studio & Twitch</span>
           </div>
         </nav>
 
-        {/* CENTER — clean program preview */}
-        <main className="flex min-w-0 flex-1 flex-col p-6" style={{ background: "#050609", gap: 14 }}>
-          {/* Top preview toolbar (completely outside the canvas so preview is never obstructed) */}
-          <div className="flex shrink-0 items-center justify-between px-1" style={{ minHeight: 32 }}>
+        {/* CENTER — Studio Program Monitor */}
+        <main className="flex min-w-0 flex-1 flex-col p-4 overflow-hidden" style={{ background: "#050609", gap: 10 }}>
+          {/* Top Canvas Toolbar */}
+          <div className="flex shrink-0 items-center justify-between px-1" style={{ minHeight: 28 }}>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[var(--nc-accent)] animate-pulse" />
                 <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.14em", color: "var(--nc-highlight)", textTransform: "uppercase" }}>
-                  Program Canvas
+                  Program Monitor
+                </span>
+                <span className="text-[11px] text-[var(--nc-text-3)] font-mono">
+                  1920×1080 · 60 FPS
                 </span>
               </div>
+
               {state.layoutEditMode && (
                 <span
-                  className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-bold"
                   style={{
-                    background: "rgba(79, 140, 255, 0.14)",
-                    border: "1px solid var(--nc-line-brand)",
-                    color: "var(--nc-primary)",
+                    background: "rgba(79, 140, 255, 0.16)",
+                    border: "1px solid var(--nc-primary)",
+                    color: "var(--nc-highlight)",
                   }}
                 >
-                  <Move size={11} /> Move & Resize Mode Active
+                  <Move size={10} color="var(--nc-primary)" />
+                  <span>Layout Editor Active</span>
                 </span>
               )}
             </div>
 
-            {/* Quick action controls when Move Mode is on */}
-            {state.layoutEditMode && (
-              <div className="flex items-center gap-2">
-                {/* Snap toggle */}
-                <button
-                  type="button"
-                  onClick={() => store.toggleSnap()}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all"
-                  style={{
-                    background: state.snapEnabled ? "rgba(0, 229, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
-                    border: state.snapEnabled ? "1px solid var(--nc-accent)" : "1px solid var(--nc-line)",
-                    color: state.snapEnabled ? "var(--nc-accent)" : "var(--nc-text-3)",
-                  }}
-                  title="Snap to center, 8px grid, and other widgets"
-                >
-                  <Magnet size={12} />
-                  <span>Snap: {state.snapEnabled ? "ON" : "OFF"}</span>
-                </button>
-
-                {movedWidgetCount > 0 && (
+            {/* Quick Action Controls */}
+            <div className="flex items-center gap-2">
+              {state.layoutEditMode ? (
+                <>
                   <button
                     type="button"
-                    onClick={() => store.resetSceneLayout(active)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                    onClick={() => store.toggleSnap()}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-all"
                     style={{
-                      background: "rgba(255, 255, 255, 0.04)",
-                      border: "1px solid var(--nc-line-strong)",
-                      color: "var(--nc-text-2)",
+                      background: state.snapEnabled ? "rgba(0, 229, 255, 0.15)" : "rgba(255, 255, 255, 0.04)",
+                      border: state.snapEnabled ? "1px solid var(--nc-accent)" : "1px solid var(--nc-line)",
+                      color: state.snapEnabled ? "var(--nc-accent)" : "var(--nc-text-3)",
                     }}
+                    title="Snap to center, 8px grid, and other widgets (Key: S)"
                   >
-                    <RotateCcw size={11} />
-                    Reset Scene ({movedWidgetCount})
+                    <Magnet size={11} />
+                    <span>Snap: {state.snapEnabled ? "ON" : "OFF"}</span>
                   </button>
-                )}
 
+                  {movedWidgetCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => store.resetSceneLayout(active)}
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer text-[var(--nc-text-2)] hover:text-white bg-white/5 border border-[var(--nc-line-strong)]"
+                      title="Reset positions of widgets in this scene"
+                    >
+                      <RotateCcw size={11} />
+                      <span>Reset ({movedWidgetCount})</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => store.setLayoutEditMode(false)}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-black transition-all cursor-pointer"
+                    style={{ background: "var(--nc-primary)" }}
+                  >
+                    <Lock size={11} />
+                    Lock
+                  </button>
+                </>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => store.setLayoutEditMode(false)}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-black transition-all cursor-pointer"
-                  style={{ background: "var(--nc-primary)" }}
+                  onClick={() => store.setLayoutEditMode(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-[var(--nc-text-3)] hover:text-white bg-white/5 border border-[var(--nc-line-strong)] transition-colors cursor-pointer"
+                  title="Enable freely moveable layout mode"
                 >
-                  <Lock size={11} />
-                  Lock Layout
+                  <Move size={11} />
+                  <span>Edit Layout</span>
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          <div className="relative w-full" style={{ aspectRatio: "16 / 9", flex: "1 1 auto", minHeight: 0, borderRadius: 20, overflow: "hidden", boxShadow: "var(--nc-shadow)", border: "1px solid var(--nc-line)" }}>
+          {/* Program Canvas Container — Generous 16:9 with dark studio stage frame */}
+          <div
+            className="relative w-full flex-1 min-h-0 flex items-center justify-center rounded-2xl overflow-hidden shadow-2xl"
+            style={{
+              aspectRatio: "16 / 9",
+              background: "#020306",
+              border: "1px solid var(--nc-line)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.8), inset 0 0 1px rgba(255,255,255,0.1)",
+            }}
+          >
             <AnimatePresence mode="wait">
-              <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+              <motion.div
+                key={active}
+                className="absolute inset-0"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
                 <CanvasStage editable>
                   <SceneView scene={active} />
                 </CanvasStage>
               </motion.div>
             </AnimatePresence>
 
-            {/* Top-left Program badge */}
-            <span className="absolute left-4 top-4 z-10 flex items-center gap-2 pointer-events-none" style={{ padding: "6px 12px", borderRadius: 999, background: "rgba(10,11,16,0.7)", backdropFilter: "blur(12px)", border: "1px solid var(--nc-line-strong)" }}>
-              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: "var(--nc-text-3)" }}>PROGRAM</span>
+            {/* Studio Top Badge */}
+            <span
+              className="absolute left-4 top-4 z-10 flex items-center gap-2 pointer-events-none"
+              style={{
+                padding: "5px 11px",
+                borderRadius: 999,
+                background: "rgba(10,11,16,0.75)",
+                backdropFilter: "blur(12px)",
+                border: "1px solid var(--nc-line-strong)",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--nc-accent)] animate-pulse" />
+              <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: "0.2em", color: "var(--nc-text-2)" }}>
+                PROGRAM FEED
+              </span>
             </span>
           </div>
 
-          {/* OBS output feeds */}
-          <div className="shrink-0">
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>
-              OBS Browser Sources
-            </span>
-            <div className="mt-3 grid grid-cols-3 gap-3">
-              <UrlRow label="Program feed (auto-switch)" path="/output" />
-              <UrlRow label={`${SCENE_LIST.find((s) => s.id === active)!.label} feed`} path={`/output/${activeSlug}`} />
-              <UrlRow label="Chat widget" path="/widgets/chat" />
+          {/* Bottom Dock — Compact OBS Browser Feeds Drawer */}
+          <div
+            className="shrink-0 rounded-xl border border-[var(--nc-line)] transition-all overflow-hidden"
+            style={{ background: "var(--nc-panel)" }}
+          >
+            {/* Collapsed / Header Strip */}
+            <div className="flex items-center justify-between px-3.5 py-2">
+              <div className="flex items-center gap-2.5">
+                <Radio size={13} color="var(--nc-accent)" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--nc-highlight)]">
+                  OBS Browser Sources
+                </span>
+                <div className="hidden sm:flex items-center gap-1.5 ml-2">
+                  <QuickCopyChip label="Copy Program Feed" path="/output" />
+                  <QuickCopyChip label={`Copy ${SCENE_LIST.find((s) => s.id === active)!.label}`} path={`/output/${activeSlug}`} />
+                  <QuickCopyChip label="Copy Chat Widget" path="/widgets/chat" />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setObsShelfOpen((v) => !v)}
+                className="flex items-center gap-1.5 text-xs font-semibold text-[var(--nc-text-3)] hover:text-white cursor-pointer px-2 py-1 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                <span>{obsShelfOpen ? "Hide URLs" : "View Full URLs"}</span>
+                {obsShelfOpen ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
+              </button>
             </div>
+
+            {/* Expandable Full URLs Cards */}
+            <AnimatePresence>
+              {obsShelfOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden border-t border-[var(--nc-line)] p-3"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                    <UrlRow label="Program Feed (Auto-Switch)" path="/output" />
+                    <UrlRow label={`${SCENE_LIST.find((s) => s.id === active)!.label} Feed`} path={`/output/${activeSlug}`} />
+                    <UrlRow label="Standalone Chat Widget" path="/widgets/chat" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
 
-        {/* RIGHT — scene configuration */}
+        {/* RIGHT — 4-Tab Scene Inspector */}
         <ConfigPanel scene={active} />
       </div>
     </div>
