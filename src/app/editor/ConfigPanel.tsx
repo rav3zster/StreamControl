@@ -16,7 +16,7 @@ import {
   Tv,
   Settings2,
 } from "lucide-react";
-import { useSceneConfig, useTimer, useLayoutEditMode, useWidgetPositions, useSnapEnabled, SCENE_LIST, sceneToSlug } from "../store/useBroadcast";
+import { useSceneConfig, useTimer, useLayoutEditMode, useWidgetPositions, useSnapEnabled, useActiveTheme, SCENE_LIST, sceneToSlug } from "../store/useBroadcast";
 import { store, type SceneId } from "../store/broadcastStore";
 import { SCENE_SCHEMA, SOCIAL_PLATFORMS, ACCENT_PRESETS, RADIUS_PRESETS } from "../store/sceneSchema";
 import { TextField, TextArea, ToggleRow, Segmented, SwatchRow } from "./fields";
@@ -112,6 +112,7 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
   const startingTimer = useTimer("starting");
   const brbTimer = useTimer("brb");
   const timer = scene === "starting" ? startingTimer : scene === "brb" ? brbTimer : null;
+  const activeTheme = useActiveTheme();
 
   const editMode = useLayoutEditMode();
   const snapEnabled = useSnapEnabled();
@@ -458,9 +459,9 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
                   <span>OBS Browser Source Feeds</span>
                 </div>
                 <div className="space-y-2">
-                  <MiniFeedCopy label="Program Feed (Auto-Switch)" path="/output" />
-                  <MiniFeedCopy label={`${meta.label} Fixed Feed`} path={`/output/${activeSlug}`} />
-                  <MiniFeedCopy label="Transparent Chat Widget" path="/widgets/chat" />
+                  <MiniFeedCopy label="Program Feed (Auto-Switch)" path={`/output?theme=${activeTheme}`} />
+                  <MiniFeedCopy label={`${meta.label} Fixed Feed`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
+                  <MiniFeedCopy label="Transparent Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
                 </div>
               </div>
 

@@ -225,12 +225,27 @@ function emit() {
   listeners.forEach((l) => l());
 }
 
+// Sync with local backend server (bridges Chrome editor <-> OBS Studio CEF)
+function syncToServer(stateToSend: BroadcastState) {
+  if (typeof window === "undefined") return;
+  try {
+    fetch("/api/state", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(stateToSend),
+    }).catch(() => {});
+  } catch {}
+}
+
 // Apply a new state locally + persist + notify. If `broadcast`, also tell peers.
 function set(next: BroadcastState, broadcast = true) {
   state = next;
   persist();
   emit();
-  if (broadcast) channel?.postMessage(state);
+  if (broadcast) {
+    channel?.postMessage(state);
+    syncToServer(state);
+  }
 }
 
 if (channel) {
@@ -254,6 +269,47 @@ if (typeof window !== "undefined" && !channel) {
       }
     }
   });
+}
+
+// Real-time server sync (bridges Chrome editor <-> OBS Studio CEF browser source)
+if (typeof window !== "undefined") {
+  // 1. Check if server has active state (e.g. OBS source loading for the first time)
+  fetch("/api/state")
+    .then((r) => (r.ok ? r.json() : null))
+    .then((serverState) => {
+      if (serverState && serverState.activeTheme) {
+        state = {
+          ...DEFAULT_STATE,
+          ...serverState,
+          layoutEditMode: false,
+        };
+        persist();
+        emit();
+      } else if (state && state.activeTheme) {
+        // If server was clean, seed it with current local state
+        syncToServer(state);
+      }
+    })
+    .catch(() => {});
+
+  // 2. Connect to real-time Server-Sent Events stream (OBS CEF receives instant push updates)
+  try {
+    const sse = new EventSource("/api/state-events");
+    sse.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data && data.activeTheme) {
+          state = {
+            ...DEFAULT_STATE,
+            ...data,
+            layoutEditMode: false,
+          };
+          persist();
+          emit();
+        }
+      } catch {}
+    };
+  } catch {}
 }
 
 // --- external store interface (useSyncExternalStore) ------------------------

@@ -426,9 +426,9 @@ export function Editor() {
                   OBS Browser Sources
                 </span>
                 <div className="hidden sm:flex items-center gap-1.5 ml-2">
-                  <QuickCopyChip label="Copy Program Feed" path="/output" />
-                  <QuickCopyChip label={`Copy ${SCENE_LIST.find((s) => s.id === active)!.label}`} path={`/output/${activeSlug}`} />
-                  <QuickCopyChip label="Copy Chat Widget" path="/widgets/chat" />
+                  <QuickCopyChip label="Copy Program Feed" path={`/output?theme=${activeTheme}`} />
+                  <QuickCopyChip label={`Copy ${SCENE_LIST.find((s) => s.id === active)!.label}`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
+                  <QuickCopyChip label="Copy Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
                 </div>
               </div>
 
@@ -453,9 +453,9 @@ export function Editor() {
                   className="overflow-hidden border-t border-[var(--nc-line)] p-3"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                    <UrlRow label="Program Feed (Auto-Switch)" path="/output" />
-                    <UrlRow label={`${SCENE_LIST.find((s) => s.id === active)!.label} Feed`} path={`/output/${activeSlug}`} />
-                    <UrlRow label="Standalone Chat Widget" path="/widgets/chat" />
+                    <UrlRow label="Program Feed (Auto-Switch)" path={`/output?theme=${activeTheme}`} />
+                    <UrlRow label={`${SCENE_LIST.find((s) => s.id === active)!.label} Feed`} path={`/output/${activeSlug}?theme=${activeTheme}`} />
+                    <UrlRow label="Standalone Chat Widget" path={`/widgets/chat?theme=${activeTheme}`} />
                   </div>
                 </motion.div>
               )}

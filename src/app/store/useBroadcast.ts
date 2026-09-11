@@ -95,8 +95,22 @@ export function useCustomLogo() {
   };
 }
 
-export function useActiveTheme() {
-  return useBroadcastState().activeTheme;
+export function useActiveTheme(): ThemeId {
+  const storeTheme = useBroadcastState().activeTheme;
+  if (typeof window !== "undefined") {
+    try {
+      const url = new URL(window.location.href);
+      let t = url.searchParams.get("theme");
+      if (!t && window.location.hash.includes("?")) {
+        const query = window.location.hash.split("?")[1];
+        t = new URLSearchParams(query).get("theme");
+      }
+      if (t && THEMES[t as ThemeId]) {
+        return t as ThemeId;
+      }
+    } catch {}
+  }
+  return storeTheme;
 }
 
 export { THEMES, THEME_LIST, type ThemeId } from "./themes";
