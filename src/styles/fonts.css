@@ -1,0 +1,8 @@
+/* ==========================================================================
+   Typography — Neo Cyber overlay pack
+   The ONLY type faces used across the system are declared here.
+   Display + UI + numeric: "Inter" (modern grotesque, Linear/Figma lineage)
+   Numeric metadata uses Inter tabular figures via font-feature-settings.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
