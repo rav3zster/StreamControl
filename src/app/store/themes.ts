@@ -1,6 +1,14 @@
 import type { SceneId, WidgetTransform } from "./broadcastStore";
 
-export type ThemeId = "cyber-esports" | "neobrutalism" | "minimal-zen" | "synthwave-sunset";
+export type ThemeId =
+  | "cyber-esports"
+  | "neobrutalism"
+  | "minimal-zen"
+  | "synthwave-sunset"
+  | "glassmorphism"
+  | "cottagecore-lofi"
+  | "retro-arcade"
+  | "cyber-glitch";
 
 export interface ThemeDefinition {
   id: ThemeId;
@@ -25,6 +33,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     swatches: ["#4f8cff", "#00e5ff", "#7b61ff", "#0a0b10"],
     bannerGradient: "linear-gradient(135deg, #0a0b10 0%, #172038 50%, #4f8cff 100%)",
     cssVars: {
+      "--nc-font": "'Inter', ui-sans-serif, system-ui, sans-serif",
+      "--nc-font-display": "'Inter', ui-sans-serif, system-ui, sans-serif",
       "--nc-primary": "#4f8cff",
       "--nc-secondary": "#7b61ff",
       "--nc-accent": "#00e5ff",
@@ -76,6 +86,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     swatches: ["#fde047", "#ff5376", "#38bdf8", "#18181b"],
     bannerGradient: "linear-gradient(135deg, #fde047 0%, #ff5376 60%, #38bdf8 100%)",
     cssVars: {
+      "--nc-font": "'Space Grotesk', 'Inter', sans-serif",
+      "--nc-font-display": "'Space Grotesk', 'Inter', sans-serif",
       "--nc-primary": "#fde047",
       "--nc-secondary": "#ff5376",
       "--nc-accent": "#38bdf8",
@@ -97,7 +109,6 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
       "--nc-shadow-soft": "4px 4px 0px #000000",
     },
     layoutPresets: {
-      // Dynamic asymmetrical composition for Neobrutalism
       starting: {
         header: { x: 0, y: -10, layer: "extreme-top" },
         countdown: { x: -28, y: -20, layer: "top" },
@@ -128,6 +139,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     swatches: ["#f59e0b", "#94a3b8", "#e2e8f0", "#090a0f"],
     bannerGradient: "linear-gradient(135deg, #090a0f 0%, #1e2433 60%, #334155 100%)",
     cssVars: {
+      "--nc-font": "'Outfit', 'Inter', sans-serif",
+      "--nc-font-display": "'Outfit', 'Inter', sans-serif",
       "--nc-primary": "#f59e0b",
       "--nc-secondary": "#cbd5e1",
       "--nc-accent": "#38bdf8",
@@ -149,7 +162,6 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
       "--nc-shadow-soft": "0 6px 24px -10px rgba(0, 0, 0, 0.5)",
     },
     layoutPresets: {
-      // Floating sleek pill layout with airy negative space
       starting: {
         header: { x: 0, y: -20, layer: "top" },
         countdown: { x: 0, y: -35, layer: "extreme-top" },
@@ -180,6 +192,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     swatches: ["#ff2a85", "#05d9e8", "#ffbe0b", "#12072b"],
     bannerGradient: "linear-gradient(135deg, #12072b 0%, #400d51 50%, #ff2a85 100%)",
     cssVars: {
+      "--nc-font": "'Righteous', 'Inter', sans-serif",
+      "--nc-font-display": "'Righteous', 'Inter', sans-serif",
       "--nc-primary": "#ff2a85",
       "--nc-secondary": "#05d9e8",
       "--nc-accent": "#ffbe0b",
@@ -201,7 +215,6 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
       "--nc-shadow-soft": "0 0 20px rgba(5, 217, 232, 0.25)",
     },
     layoutPresets: {
-      // Centered arcade cabinet layout with high neon prominence
       starting: {
         header: { x: 0, y: 0, layer: "extreme-top" },
         countdown: { x: 0, y: -10, layer: "extreme-top" },
@@ -219,6 +232,218 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
       chatting: {
         cam: { x: 0, y: 0, layer: "top" },
         chat: { x: 0, y: 0, layer: "top" },
+      },
+    },
+  },
+
+  "glassmorphism": {
+    id: "glassmorphism",
+    name: "Liquid Glassmorphism",
+    tagline: "Frosted, iridescent & translucent",
+    description: "Multi-layered frosted liquid glass panels, iridescent rainbow refraction borders, specular liquid sheen, and floating 3D glass prisms.",
+    genres: ["IRL / Just Chatting", "Tech & Creative", "Chill Beats", "Valorant / CS2", "High-End Luxury"],
+    swatches: ["#4facfe", "#00f2fe", "#ffffff", "#060813"],
+    bannerGradient: "linear-gradient(135deg, #060813 0%, #172445 45%, #4facfe 100%)",
+    cssVars: {
+      "--nc-font": "'Plus Jakarta Sans', sans-serif",
+      "--nc-font-display": "'Plus Jakarta Sans', sans-serif",
+      "--nc-primary": "#4facfe",
+      "--nc-secondary": "#00f2fe",
+      "--nc-accent": "#ffffff",
+      "--nc-highlight": "#ffffff",
+      "--nc-bg": "#060813",
+      "--nc-bg-2": "#0c1122",
+      "--nc-panel": "rgba(255, 255, 255, 0.08)",
+      "--nc-panel-2": "rgba(255, 255, 255, 0.15)",
+      "--nc-line": "rgba(255, 255, 255, 0.18)",
+      "--nc-line-strong": "rgba(255, 255, 255, 0.35)",
+      "--nc-line-brand": "rgba(79, 172, 254, 0.55)",
+      "--nc-text": "#f8fafc",
+      "--nc-text-2": "#cbd5e1",
+      "--nc-text-3": "#94a3b8",
+      "--nc-r-sm": "14px",
+      "--nc-r-md": "22px",
+      "--nc-r-lg": "32px",
+      "--nc-shadow": "0 24px 60px -15px rgba(0, 242, 254, 0.25)",
+      "--nc-shadow-soft": "0 10px 30px -10px rgba(79, 172, 254, 0.2)",
+    },
+    layoutPresets: {
+      starting: {
+        header: { x: 0, y: -10, layer: "extreme-top" },
+        countdown: { x: 0, y: -20, layer: "extreme-top" },
+        title: { x: 0, y: 15, layer: "top" },
+        info: { x: 0, y: 30, layer: "bottom" },
+        socials: { x: 0, y: 10, layer: "bottom" },
+      },
+      live: {
+        scoreboard: { x: 0, y: 0, layer: "top" },
+        vtuber: { x: 10, y: -10, w: 350, h: 225, layer: "extreme-top" },
+        chat: { x: 0, y: 0, layer: "bottom" },
+        goalBars: { x: 0, y: 10, layer: "bottom" },
+        socials: { x: 0, y: 0, layer: "bottom" },
+      },
+      chatting: {
+        cam: { x: -10, y: 0, layer: "top" },
+        chat: { x: 10, y: 0, layer: "top" },
+      },
+    },
+  },
+
+  "cottagecore-lofi": {
+    id: "cottagecore-lofi",
+    name: "Cottagecore & Lofi",
+    tagline: "Warm, botanical & cozy room",
+    description: "Earth tones, matcha sage & terracotta peach accents, warm golden fireplace dust motes, swaying 3D botanical leaves, and cozy coffee steam.",
+    genres: ["Lo-Fi / Study", "Art & Illustration", "Story / RPGs", "Animal Crossing / Stardew", "Cozy Gaming"],
+    swatches: ["#84a98c", "#e07a5f", "#fefae0", "#231b15"],
+    bannerGradient: "linear-gradient(135deg, #231b15 0%, #3d405b 50%, #84a98c 100%)",
+    cssVars: {
+      "--nc-font": "'Fraunces', serif",
+      "--nc-font-display": "'Fraunces', serif",
+      "--nc-primary": "#84a98c",
+      "--nc-secondary": "#e07a5f",
+      "--nc-accent": "#fefae0",
+      "--nc-highlight": "#fefae0",
+      "--nc-bg": "#19130e",
+      "--nc-bg-2": "#261c15",
+      "--nc-panel": "rgba(43, 33, 26, 0.88)",
+      "--nc-panel-2": "rgba(58, 46, 37, 0.82)",
+      "--nc-line": "rgba(254, 250, 224, 0.14)",
+      "--nc-line-strong": "rgba(254, 250, 224, 0.28)",
+      "--nc-line-brand": "rgba(132, 169, 140, 0.6)",
+      "--nc-text": "#fefae0",
+      "--nc-text-2": "#d4cca5",
+      "--nc-text-3": "#948a6e",
+      "--nc-r-sm": "12px",
+      "--nc-r-md": "20px",
+      "--nc-r-lg": "30px",
+      "--nc-shadow": "0 20px 50px -15px rgba(25, 19, 14, 0.85)",
+      "--nc-shadow-soft": "0 8px 24px -10px rgba(224, 122, 95, 0.25)",
+    },
+    layoutPresets: {
+      starting: {
+        header: { x: 0, y: -15, layer: "top" },
+        countdown: { x: 0, y: -25, layer: "extreme-top" },
+        title: { x: 0, y: 10, layer: "top" },
+        info: { x: 0, y: 25, layer: "bottom" },
+        socials: { x: 0, y: 15, layer: "bottom" },
+      },
+      live: {
+        scoreboard: { x: 0, y: 0, layer: "top" },
+        vtuber: { x: 0, y: -10, w: 340, h: 220, layer: "extreme-top" },
+        chat: { x: 0, y: 0, layer: "bottom" },
+        goalBars: { x: 0, y: 10, layer: "bottom" },
+        socials: { x: 0, y: 0, layer: "bottom" },
+      },
+      chatting: {
+        cam: { x: 0, y: 0, layer: "top" },
+        chat: { x: 0, y: 0, layer: "bottom" },
+      },
+    },
+  },
+
+  "retro-arcade": {
+    id: "retro-arcade",
+    name: "Retro 8-Bit Arcade",
+    tagline: "Classic CRT & arcade cabinet",
+    description: "Authentic CRT scanlines, 3D wireframe horizon arcade cube, floating 8-bit coin and star sprites, pixel typography, and nostalgic cabinet borders.",
+    genres: ["Retro Games", "Speedrunning", "Fighting Games", "Platformers", "Indie Classics"],
+    swatches: ["#ffd700", "#39ff14", "#00ffff", "#0a0518"],
+    bannerGradient: "linear-gradient(135deg, #0a0518 0%, #1f0b3b 50%, #ffd700 100%)",
+    cssVars: {
+      "--nc-font": "'Silkscreen', 'Press Start 2P', monospace",
+      "--nc-font-display": "'Silkscreen', 'Press Start 2P', monospace",
+      "--nc-primary": "#ffd700",
+      "--nc-secondary": "#39ff14",
+      "--nc-accent": "#00ffff",
+      "--nc-highlight": "#ffffff",
+      "--nc-bg": "#0a0518",
+      "--nc-bg-2": "#14092b",
+      "--nc-panel": "#160c30",
+      "--nc-panel-2": "#221247",
+      "--nc-line": "rgba(255, 215, 0, 0.35)",
+      "--nc-line-strong": "rgba(57, 255, 20, 0.5)",
+      "--nc-line-brand": "#ffd700",
+      "--nc-text": "#ffffff",
+      "--nc-text-2": "#e2d9f3",
+      "--nc-text-3": "#8c7aa8",
+      "--nc-r-sm": "2px",
+      "--nc-r-md": "6px",
+      "--nc-r-lg": "10px",
+      "--nc-shadow": "6px 6px 0px #ffd700, 10px 10px 0px rgba(0,0,0,0.8)",
+      "--nc-shadow-soft": "3px 3px 0px #39ff14",
+    },
+    layoutPresets: {
+      starting: {
+        header: { x: 0, y: 0, layer: "extreme-top" },
+        countdown: { x: 0, y: -15, layer: "extreme-top" },
+        title: { x: 0, y: 15, layer: "top" },
+        info: { x: 0, y: 25, layer: "bottom" },
+        socials: { x: 0, y: 15, layer: "top" },
+      },
+      live: {
+        scoreboard: { x: 0, y: 0, layer: "extreme-top" },
+        vtuber: { x: -15, y: -15, w: 350, h: 225, layer: "extreme-top" },
+        chat: { x: 0, y: 0, layer: "top" },
+        goalBars: { x: 0, y: 0, layer: "bottom" },
+        socials: { x: 0, y: 0, layer: "bottom" },
+      },
+      chatting: {
+        cam: { x: 0, y: 0, layer: "top" },
+        chat: { x: 0, y: 0, layer: "top" },
+      },
+    },
+  },
+
+  "cyber-glitch": {
+    id: "cyber-glitch",
+    name: "Cyber Glitch & Matrix",
+    tagline: "Corrupted anomaly & data rain",
+    description: "High-tech digital matrix distortion, falling binary code streams, 3D rotating tesseract wireframe, and aggressive RGB chromatic glitch twitch.",
+    genres: ["Cyberpunk", "Hardcore FPS", "Night Raid / Stealth", "Electronic / Bass", "Sci-Fi"],
+    swatches: ["#00ff66", "#ff0055", "#ffaa00", "#030906"],
+    bannerGradient: "linear-gradient(135deg, #030906 0%, #0c2014 50%, #00ff66 100%)",
+    cssVars: {
+      "--nc-font": "'Orbitron', monospace",
+      "--nc-font-display": "'Orbitron', monospace",
+      "--nc-primary": "#00ff66",
+      "--nc-secondary": "#ff0055",
+      "--nc-accent": "#ffaa00",
+      "--nc-highlight": "#ffffff",
+      "--nc-bg": "#030906",
+      "--nc-bg-2": "#07150c",
+      "--nc-panel": "#08170e",
+      "--nc-panel-2": "#0f2617",
+      "--nc-line": "rgba(0, 255, 102, 0.3)",
+      "--nc-line-strong": "rgba(255, 0, 85, 0.5)",
+      "--nc-line-brand": "rgba(0, 255, 102, 0.65)",
+      "--nc-text": "#e6fff0",
+      "--nc-text-2": "#80ffb2",
+      "--nc-text-3": "#339959",
+      "--nc-r-sm": "4px",
+      "--nc-r-md": "8px",
+      "--nc-r-lg": "14px",
+      "--nc-shadow": "0 0 35px rgba(0, 255, 102, 0.35), 0 0 10px rgba(255, 0, 85, 0.3)",
+      "--nc-shadow-soft": "0 0 18px rgba(0, 255, 102, 0.2)",
+    },
+    layoutPresets: {
+      starting: {
+        header: { x: 0, y: -10, layer: "extreme-top" },
+        countdown: { x: 0, y: -20, layer: "extreme-top" },
+        title: { x: 0, y: 15, layer: "top" },
+        info: { x: 0, y: 25, layer: "bottom" },
+        socials: { x: 0, y: 10, layer: "top" },
+      },
+      live: {
+        scoreboard: { x: 0, y: 0, layer: "extreme-top" },
+        vtuber: { x: 0, y: -20, w: 360, h: 235, layer: "extreme-top" },
+        chat: { x: 0, y: 0, layer: "top" },
+        goalBars: { x: 0, y: 0, layer: "bottom" },
+        socials: { x: 0, y: 0, layer: "bottom" },
+      },
+      chatting: {
+        cam: { x: -10, y: 0, layer: "top" },
+        chat: { x: 10, y: 0, layer: "top" },
       },
     },
   },

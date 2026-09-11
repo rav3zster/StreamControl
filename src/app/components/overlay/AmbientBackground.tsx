@@ -344,6 +344,488 @@ function SynthwaveBackground({ animated = true }: { animated?: boolean }) {
   );
 }
 
+// --- Glassmorphism & Translucent Liquid Glass Background ---------------------
+const GLASS_PRISMS = [
+  { id: 1, x: 10, y: 15, size: 76, dur: 18, delay: 0 },
+  { id: 2, x: 88, y: 18, size: 92, dur: 22, delay: 1.5 },
+  { id: 3, x: 82, y: 74, size: 68, dur: 16, delay: 3 },
+  { id: 4, x: 14, y: 76, size: 84, dur: 24, delay: 0.8 },
+  { id: 5, x: 50, y: 88, size: 60, dur: 20, delay: 2 },
+];
+
+function GlassmorphismBackground({ animated = true }: { animated?: boolean }) {
+  return (
+    <>
+      {/* Deep obsidian glass base */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(120% 100% at 50% 10%, #0d162e 0%, #060813 60%, #020308 100%)",
+        }}
+      />
+
+      {/* Floating liquid aurora flares */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 750,
+          height: 750,
+          left: "5%",
+          top: "-15%",
+          background: "radial-gradient(circle, rgba(79,172,254,0.18) 0%, rgba(0,242,254,0.12) 40%, transparent 70%)",
+          filter: "blur(60px)",
+        }}
+        animate={animated ? { x: [0, 50, 0], y: [0, 40, 0], scale: [1, 1.1, 1] } : undefined}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 820,
+          height: 820,
+          right: "2%",
+          bottom: "-15%",
+          background: "radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(79,172,254,0.1) 45%, transparent 70%)",
+          filter: "blur(70px)",
+        }}
+        animate={animated ? { x: [0, -60, 0], y: [0, -30, 0], scale: [1, 1.08, 1] } : undefined}
+        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Micro-dot frosted glass grid */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          maskImage: "radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse at 50% 50%, #000 40%, transparent 80%)",
+        }}
+      />
+
+      {/* 3D Floating Translucent Glass Prisms */}
+      {GLASS_PRISMS.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            perspective: 800,
+          }}
+          animate={animated ? { y: [0, -22, 0] } : undefined}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
+        >
+          <motion.div
+            style={{
+              width: "100%",
+              height: "100%",
+              transformStyle: "preserve-3d",
+              borderRadius: p.size * 0.28,
+              background: "linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(79,172,254,0.1) 40%, rgba(0,242,254,0.18) 100%)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              border: "1.5px solid rgba(255,255,255,0.35)",
+              boxShadow: "0 20px 40px rgba(0, 242, 254, 0.22), inset 0 0 16px rgba(255,255,255,0.35)",
+            }}
+            animate={animated ? { rotateX: [0, 360], rotateY: [0, 360], rotateZ: [0, 180] } : undefined}
+            transition={{ duration: p.dur, repeat: Infinity, ease: "linear" }}
+          >
+            {/* Specular light facet */}
+            <div
+              style={{
+                position: "absolute",
+                inset: "15%",
+                borderRadius: p.size * 0.18,
+                background: "linear-gradient(225deg, rgba(255,255,255,0.45) 0%, transparent 65%)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            />
+          </motion.div>
+        </motion.div>
+      ))}
+    </>
+  );
+}
+
+// --- Cozy Cottagecore & Lofi Room Background ---------------------------------
+const BOTANICAL_LEAVES = [
+  { id: 1, x: 6, y: 18, size: 58, rot: 35, dur: 7, delay: 0 },
+  { id: 2, x: 92, y: 22, size: 50, rot: -40, dur: 8, delay: 1.5 },
+  { id: 3, x: 86, y: 78, size: 64, rot: 15, dur: 9, delay: 0.8 },
+  { id: 4, x: 10, y: 75, size: 54, rot: -25, dur: 7.5, delay: 2 },
+  { id: 5, x: 48, y: 6, size: 44, rot: 8, dur: 6.5, delay: 3 },
+];
+
+const GOLDEN_MOTES = Array.from({ length: 26 }, (_, i) => ({
+  id: i,
+  x: (i * 39) % 100,
+  y: (i * 67) % 100,
+  size: 2 + (i % 3),
+  dur: 9 + (i % 8),
+  delay: (i % 7) * 0.7,
+}));
+
+function CottagecoreBackground({ animated = true }: { animated?: boolean }) {
+  return (
+    <>
+      {/* Warm cedar & matcha earthy base */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(120% 90% at 50% 30%, #261c15 0%, #19130e 65%, #120d09 100%)",
+        }}
+      />
+
+      {/* Warm fireplace ambient hearth glow */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 850,
+          height: 600,
+          left: "20%",
+          top: "10%",
+          background: "radial-gradient(ellipse, rgba(224,122,95,0.12) 0%, rgba(254,250,224,0.06) 45%, transparent 70%)",
+          filter: "blur(50px)",
+        }}
+        animate={animated ? { opacity: [0.7, 1, 0.7], scale: [1, 1.05, 1] } : undefined}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Floating warm golden dust motes */}
+      {animated &&
+        GOLDEN_MOTES.map((mote) => (
+          <motion.span
+            key={mote.id}
+            className="absolute rounded-full pointer-events-none"
+            style={{
+              left: `${mote.x}%`,
+              top: `${mote.y}%`,
+              width: mote.size,
+              height: mote.size,
+              background: "#fefae0",
+              boxShadow: "0 0 6px rgba(254, 250, 224, 0.7)",
+            }}
+            animate={{
+              y: [0, -35, 0],
+              x: [0, (mote.id % 2 === 0 ? 8 : -8), 0],
+              opacity: [0.1, 0.85, 0.1],
+            }}
+            transition={{
+              duration: mote.dur,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: mote.delay,
+            }}
+          />
+        ))}
+
+      {/* 3D Swaying Botanical Fern/Ivy Leaves */}
+      {BOTANICAL_LEAVES.map((leaf) => (
+        <motion.div
+          key={leaf.id}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${leaf.x}%`,
+            top: `${leaf.y}%`,
+            width: leaf.size,
+            height: leaf.size,
+            transformOrigin: "bottom left",
+          }}
+          animate={
+            animated
+              ? {
+                  rotate: [leaf.rot - 8, leaf.rot + 8, leaf.rot - 8],
+                  y: [0, -8, 0],
+                }
+              : { rotate: leaf.rot }
+          }
+          transition={{
+            duration: leaf.dur,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: leaf.delay,
+          }}
+        >
+          {/* Stylized SVG Leaf */}
+          <svg viewBox="0 0 48 48" fill="none" className="w-full h-full drop-shadow-md">
+            <path
+              d="M12 40C12 40 10 24 24 10C38 24 36 40 36 40C36 40 26 36 24 28C22 36 12 40 12 40Z"
+              fill="rgba(132, 169, 140, 0.35)"
+              stroke="#84a98c"
+              strokeWidth="2"
+            />
+            <path d="M24 10V38" stroke="#84a98c" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M24 20L30 16" stroke="#84a98c" strokeWidth="1.2" strokeLinecap="round" />
+            <path d="M24 26L18 22" stroke="#84a98c" strokeWidth="1.2" strokeLinecap="round" />
+          </svg>
+        </motion.div>
+      ))}
+
+      {/* Subtle Vinyl Turntable Groove Rings on Corner */}
+      <div
+        className="absolute -bottom-36 -left-36 w-[420px] h-[420px] rounded-full pointer-events-none opacity-20 border border-[rgba(254,250,224,0.3)]"
+        style={{
+          boxShadow:
+            "0 0 0 20px rgba(0,0,0,0.4), 0 0 0 45px rgba(254,250,224,0.08), 0 0 0 70px rgba(0,0,0,0.3), 0 0 0 95px rgba(254,250,224,0.06)",
+        }}
+      />
+    </>
+  );
+}
+
+// --- Retro 8-Bit Arcade Background -------------------------------------------
+const ARCADE_PIXELS = [
+  { id: 1, type: "coin", x: 12, y: 16, dur: 4 },
+  { id: 2, type: "star", x: 86, y: 18, dur: 3.5 },
+  { id: 3, type: "alien", x: 88, y: 80, dur: 5 },
+  { id: 4, type: "star", x: 14, y: 82, dur: 3 },
+  { id: 5, type: "coin", x: 48, y: 8, dur: 4.5 },
+];
+
+function RetroArcadeBackground({ animated = true }: { animated?: boolean }) {
+  return (
+    <>
+      {/* Deep phosphor arcade black base */}
+      <div className="absolute inset-0" style={{ background: "#0a0518" }} />
+
+      {/* 3D Perspective Wireframe Horizon Floor */}
+      <div
+        className="absolute inset-x-0 bottom-0 overflow-hidden pointer-events-none"
+        style={{
+          height: "44%",
+          perspective: "320px",
+          perspectiveOrigin: "50% 0%",
+        }}
+      >
+        <motion.div
+          className="absolute inset-x-0 top-0 h-[220%]"
+          style={{
+            transform: "rotateX(70deg)",
+            transformOrigin: "50% 0%",
+            backgroundImage:
+              "linear-gradient(rgba(255, 215, 0, 0.45) 2px, transparent 2px), linear-gradient(90deg, rgba(57, 255, 20, 0.4) 2px, transparent 2px)",
+            backgroundSize: "48px 40px",
+            boxShadow: "inset 0 80px 60px -10px #0a0518",
+          }}
+          animate={animated ? { backgroundPosition: ["0px 0px", "0px 40px"] } : undefined}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
+
+      {/* Horizon neon gold laser beam */}
+      <div
+        className="absolute inset-x-0 pointer-events-none"
+        style={{
+          bottom: "44%",
+          height: 2,
+          background: "linear-gradient(90deg, transparent 0%, #ffd700 25%, #39ff14 50%, #ffd700 75%, transparent 100%)",
+          boxShadow: "0 0 16px #ffd700, 0 0 30px #39ff14",
+        }}
+      />
+
+      {/* 3D Floating Wireframe Arcade Cube */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          right: "12%",
+          top: "22%",
+          width: 60,
+          height: 60,
+          perspective: 600,
+        }}
+        animate={animated ? { y: [0, -18, 0] } : undefined}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <motion.div
+          style={{
+            width: "100%",
+            height: "100%",
+            transformStyle: "preserve-3d",
+            border: "2px solid #ffd700",
+            background: "rgba(255, 215, 0, 0.12)",
+            boxShadow: "0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(57, 255, 20, 0.3)",
+          }}
+          animate={animated ? { rotateX: [0, 360], rotateY: [0, 360] } : undefined}
+          transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+        />
+      </motion.div>
+
+      {/* Floating 8-Bit Pixel Sprites */}
+      {ARCADE_PIXELS.map((item) => (
+        <motion.div
+          key={item.id}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${item.x}%`,
+            top: `${item.y}%`,
+            width: 28,
+            height: 28,
+          }}
+          animate={animated ? { y: [0, -12, 0] } : undefined}
+          transition={{ duration: item.dur, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {item.type === "coin" && (
+            <div
+              className="w-6 h-6 rounded-full border-2 border-[#ffd700] bg-[#ffd700]/20 flex items-center justify-center text-[10px] font-mono font-black text-[#ffd700]"
+              style={{ boxShadow: "0 0 10px #ffd700" }}
+            >
+              $
+            </div>
+          )}
+          {item.type === "star" && (
+            <div
+              className="w-5 h-5 bg-[#39ff14] rotate-45 border border-white"
+              style={{ boxShadow: "0 0 12px #39ff14" }}
+            />
+          )}
+          {item.type === "alien" && (
+            <svg viewBox="0 0 16 16" fill="#00ffff" className="w-6 h-6 drop-shadow-[0_0_8px_#00ffff]">
+              <rect x="4" y="2" width="8" height="2" />
+              <rect x="2" y="4" width="12" height="6" />
+              <rect x="0" y="6" width="16" height="4" />
+              <rect x="2" y="10" width="4" height="4" />
+              <rect x="10" y="10" width="4" height="4" />
+              <rect x="4" y="6" width="2" height="2" fill="#0a0518" />
+              <rect x="10" y="6" width="2" height="2" fill="#0a0518" />
+            </svg>
+          )}
+        </motion.div>
+      ))}
+
+      {/* CRT RGB Scanlines */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(rgba(0,0,0,0.22) 50%, transparent 50%)",
+          backgroundSize: "100% 4px",
+        }}
+      />
+    </>
+  );
+}
+
+// --- Cyber Glitch & Matrix Anomaly Background --------------------------------
+const GLITCH_COLUMNS = [
+  { id: 1, x: 6, chars: "01011001", speed: 8 },
+  { id: 2, x: 18, chars: "7F0A4B12", speed: 11 },
+  { id: 3, x: 30, chars: "10110100", speed: 7 },
+  { id: 4, x: 68, chars: "FF0055AA", speed: 9 },
+  { id: 5, x: 82, chars: "00FF6601", speed: 12 },
+  { id: 6, x: 94, chars: "11001010", speed: 6 },
+];
+
+function CyberGlitchBackground({ animated = true }: { animated?: boolean }) {
+  return (
+    <>
+      {/* Void matrix black base */}
+      <div className="absolute inset-0" style={{ background: "#030906" }} />
+
+      {/* Falling Binary Data Rain Columns */}
+      {animated &&
+        GLITCH_COLUMNS.map((col) => (
+          <motion.div
+            key={col.id}
+            className="absolute pointer-events-none flex flex-col font-mono text-[10px] tracking-widest"
+            style={{
+              left: `${col.x}%`,
+              color: "rgba(0, 255, 102, 0.45)",
+              textShadow: "0 0 8px #00ff66",
+            }}
+            animate={{ top: ["-30%", "110%"] }}
+            transition={{ duration: col.speed, repeat: Infinity, ease: "linear" }}
+          >
+            {col.chars.split("").map((c, i) => (
+              <span key={i} style={{ opacity: i === col.chars.length - 1 ? 1 : 0.4 + i * 0.08 }}>
+                {c}
+              </span>
+            ))}
+          </motion.div>
+        ))}
+
+      {/* 3D Rotating Matrix Tesseract Wireframe */}
+      <motion.div
+        className="absolute pointer-events-none"
+        style={{
+          left: "14%",
+          top: "24%",
+          width: 70,
+          height: 70,
+          perspective: 700,
+        }}
+        animate={animated ? { y: [0, -15, 0] } : undefined}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <motion.div
+          style={{
+            width: "100%",
+            height: "100%",
+            transformStyle: "preserve-3d",
+            border: "1.5px solid #00ff66",
+            background: "rgba(0, 255, 102, 0.08)",
+            boxShadow: "0 0 25px rgba(0, 255, 102, 0.45), inset 0 0 15px rgba(255, 0, 85, 0.3)",
+          }}
+          animate={animated ? { rotateX: [0, 360], rotateY: [0, 360], rotateZ: [0, 180] } : undefined}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        >
+          {/* Inner nested diamond ring */}
+          <div
+            style={{
+              position: "absolute",
+              inset: "15%",
+              border: "1.5px solid #ff0055",
+              boxShadow: "0 0 10px #ff0055",
+            }}
+          />
+        </motion.div>
+      </motion.div>
+
+      {/* Corrupted RGB Glitch Flare Glows */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 800,
+          height: 600,
+          right: "-10%",
+          top: "10%",
+          background: "radial-gradient(circle, rgba(0,255,102,0.12) 0%, rgba(255,0,85,0.08) 40%, transparent 70%)",
+          filter: "blur(60px)",
+        }}
+        animate={animated ? { scale: [1, 1.08, 1], opacity: [0.6, 0.9, 0.6] } : undefined}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      {/* Periodic horizontal glitch twitch slice */}
+      {animated && (
+        <motion.div
+          className="absolute inset-x-0 pointer-events-none opacity-20"
+          style={{
+            height: 3,
+            background: "linear-gradient(90deg, #ff0055, #00ff66, #ffaa00)",
+            boxShadow: "0 0 12px #ff0055",
+          }}
+          animate={{
+            top: ["10%", "85%", "35%", "95%"],
+            opacity: [0, 0.6, 0, 0.8, 0],
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+
+      {/* Digital Scanlines */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "linear-gradient(rgba(0,255,102,0.06) 1px, transparent 1px)",
+          backgroundSize: "100% 3px",
+        }}
+      />
+    </>
+  );
+}
+
 // --- Main AmbientBackground Wrapper ------------------------------------------
 export function AmbientBackground({
   grid = true,
@@ -363,6 +845,10 @@ export function AmbientBackground({
       {theme === "minimal-zen" && <MinimalZenBackground animated={animated} />}
       {theme === "synthwave-sunset" && <SynthwaveBackground animated={animated} />}
       {theme === "cyber-esports" && <CyberBackground animated={animated} />}
+      {theme === "glassmorphism" && <GlassmorphismBackground animated={animated} />}
+      {theme === "cottagecore-lofi" && <CottagecoreBackground animated={animated} />}
+      {theme === "retro-arcade" && <RetroArcadeBackground animated={animated} />}
+      {theme === "cyber-glitch" && <CyberGlitchBackground animated={animated} />}
 
       {/* Faint overall edge vignette */}
       <div
@@ -371,9 +857,12 @@ export function AmbientBackground({
           boxShadow:
             theme === "neobrutalism"
               ? "inset 0 0 100px rgba(0,0,0,0.4)"
+              : theme === "retro-arcade"
+              ? "inset 0 0 80px rgba(0,0,0,0.8)"
               : "inset 0 0 320px 40px rgba(0,0,0,0.6)",
         }}
       />
     </div>
   );
 }
+

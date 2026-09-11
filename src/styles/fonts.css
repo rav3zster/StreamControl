@@ -1,8 +1,15 @@
 /* ==========================================================================
-   Typography — Neo Cyber overlay pack
-   The ONLY type faces used across the system are declared here.
-   Display + UI + numeric: "Inter" (modern grotesque, Linear/Figma lineage)
-   Numeric metadata uses Inter tabular figures via font-feature-settings.
+   Typography — Multi-Theme Broadcast Suite
+   Loads bespoke Google Fonts for each distinctive aesthetic:
+   - Inter: Cyber Esports default & balanced UI
+   - Space Grotesk: Neobrutalism Pop bold typography
+   - Outfit: Minimal Zen airy typography
+   - Righteous: Synthwave Sunset 80s display typography
+   - Plus Jakarta Sans: Glassmorphism luxury geometric typography
+   - Fraunces: Cozy Cottagecore & Lofi organic editorial serif
+   - Silkscreen & Press Start 2P: Retro 8-Bit Arcade typography
+   - Orbitron: Cyber Glitch & Matrix sci-fi HUD typography
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Press+Start+2P&family=Righteous&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+

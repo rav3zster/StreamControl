@@ -43,6 +43,18 @@ export function Panel({
     if (theme === "minimal-zen") {
       return glass ? "rgba(18,22,32,0.7)" : "var(--nc-panel)";
     }
+    if (theme === "glassmorphism") {
+      return glass ? "rgba(255, 255, 255, 0.08)" : "var(--nc-panel)";
+    }
+    if (theme === "cottagecore-lofi") {
+      return glass ? "rgba(43, 33, 26, 0.88)" : "var(--nc-panel)";
+    }
+    if (theme === "retro-arcade") {
+      return glass ? "#160c30" : "var(--nc-panel)";
+    }
+    if (theme === "cyber-glitch") {
+      return glass ? "rgba(8, 23, 14, 0.9)" : "var(--nc-panel)";
+    }
     return glass ? "rgba(18,20,28,0.72)" : "var(--nc-panel)";
   };
 
@@ -50,12 +62,19 @@ export function Panel({
     if (theme === "neobrutalism") return "3px solid #000000";
     if (theme === "synthwave-sunset") return "1.5px solid rgba(255,42,133,0.45)";
     if (theme === "minimal-zen") return "1px solid rgba(255,255,255,0.08)";
+    if (theme === "glassmorphism") return "1.5px solid rgba(255,255,255,0.22)";
+    if (theme === "cottagecore-lofi") return "1.5px solid rgba(254,250,224,0.18)";
+    if (theme === "retro-arcade") return "2px solid #ffd700";
+    if (theme === "cyber-glitch") return "1.5px solid rgba(0, 255, 102, 0.4)";
     return "1px solid var(--nc-line)";
   };
 
   const getShadow = () => {
     if (theme === "neobrutalism") return "4px 4px 0px #000000";
     if (theme === "synthwave-sunset") return "0 0 24px rgba(255,42,133,0.25)";
+    if (theme === "glassmorphism") return "0 20px 50px -10px rgba(0, 242, 254, 0.2), inset 0 0 20px rgba(255,255,255,0.06)";
+    if (theme === "retro-arcade") return "4px 4px 0px #ffd700, 6px 6px 0px rgba(0,0,0,0.7)";
+    if (theme === "cyber-glitch") return "0 0 20px rgba(0, 255, 102, 0.25), 0 0 6px rgba(255,0,85,0.3)";
     return "var(--nc-shadow-soft)";
   };
 
@@ -69,7 +88,7 @@ export function Panel({
       className={className}
       style={{
         background: getBackground(),
-        backdropFilter: glass && theme !== "neobrutalism" ? "blur(20px) saturate(120%)" : undefined,
+        backdropFilter: glass && theme !== "neobrutalism" ? (theme === "glassmorphism" ? "blur(28px) saturate(160%)" : "blur(20px) saturate(120%)") : undefined,
         border: getBorder(),
         borderRadius: r,
         boxShadow: getShadow(),
@@ -91,7 +110,7 @@ export function SectionLabel({
   accent,
   className = "",
 }: {
-  children: ReactNode;
+  children?: ReactNode;
   accent?: string;
   className?: string;
 }) {
@@ -107,6 +126,22 @@ export function SectionLabel({
           border: "2px solid #000000",
           boxShadow: "2px 2px 0px #000000",
           borderRadius: 4,
+        }}
+      >
+        {children}
+      </div>
+    );
+  }
+  if (theme === "retro-arcade") {
+    return (
+      <div
+        className={`inline-flex items-center gap-1.5 px-2 py-0.5 font-bold uppercase tracking-wider ${className}`}
+        style={{
+          fontSize: 10,
+          background: accent || "#ffd700",
+          color: "#0a0518",
+          border: "1px solid #ffffff",
+          boxShadow: "2px 2px 0px #000000",
         }}
       >
         {children}
