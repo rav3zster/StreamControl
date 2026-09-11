@@ -1,10 +1,11 @@
 import { motion } from "motion/react";
 import type { CSSProperties, ReactNode } from "react";
-import { useCustomLogo } from "../../store/useBroadcast";
+import { useCustomLogo, useActiveTheme } from "../../store/useBroadcast";
 
 // ============================================================================
 // Primitives & HUD — the shared vocabulary every scene is built from.
 // All color / radius values reference CSS tokens so the pack retunes from CSS.
+// Components adapt their visual styling based on the active theme.
 // ============================================================================
 
 /* --- Panel -----------------------------------------------------------------
@@ -28,17 +29,51 @@ export function Panel({
   radius?: "sm" | "md" | "lg" | "xl";
   float?: boolean;
 }) {
+  const theme = useActiveTheme();
   const r = { sm: "var(--nc-r-sm)", md: "var(--nc-r-md)", lg: "var(--nc-r-lg)", xl: "var(--nc-r-xl)" }[radius];
   const delay = (floatSeed++ % 5) * 0.6;
+
+  const getBackground = () => {
+    if (theme === "neobrutalism") {
+      return glass ? "#ffffff" : "var(--nc-panel)";
+    }
+    if (theme === "synthwave-sunset") {
+      return glass ? "rgba(25,11,56,0.85)" : "var(--nc-panel)";
+    }
+    if (theme === "minimal-zen") {
+      return glass ? "rgba(18,22,32,0.7)" : "var(--nc-panel)";
+    }
+    return glass ? "rgba(18,20,28,0.72)" : "var(--nc-panel)";
+  };
+
+  const getBorder = () => {
+    if (theme === "neobrutalism") return "3px solid #000000";
+    if (theme === "synthwave-sunset") return "1.5px solid rgba(255,42,133,0.45)";
+    if (theme === "minimal-zen") return "1px solid rgba(255,255,255,0.08)";
+    return "1px solid var(--nc-line)";
+  };
+
+  const getShadow = () => {
+    if (theme === "neobrutalism") return "4px 4px 0px #000000";
+    if (theme === "synthwave-sunset") return "0 0 24px rgba(255,42,133,0.25)";
+    return "var(--nc-shadow-soft)";
+  };
+
+  const getTextColor = () => {
+    if (theme === "neobrutalism") return "#09090b";
+    return undefined;
+  };
+
   return (
     <motion.div
       className={className}
       style={{
-        background: glass ? "rgba(18,20,28,0.72)" : "var(--nc-panel)",
-        backdropFilter: glass ? "blur(20px) saturate(120%)" : undefined,
-        border: "1px solid var(--nc-line)",
+        background: getBackground(),
+        backdropFilter: glass && theme !== "neobrutalism" ? "blur(20px) saturate(120%)" : undefined,
+        border: getBorder(),
         borderRadius: r,
-        boxShadow: "var(--nc-shadow-soft)",
+        boxShadow: getShadow(),
+        color: getTextColor(),
         ...style,
       }}
       animate={float ? { y: [0, -2, 0] } : undefined}
@@ -60,6 +95,24 @@ export function SectionLabel({
   accent?: string;
   className?: string;
 }) {
+  const theme = useActiveTheme();
+  if (theme === "neobrutalism") {
+    return (
+      <div
+        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 font-bold uppercase tracking-wider ${className}`}
+        style={{
+          fontSize: 11,
+          background: accent || "#fde047",
+          color: "#000000",
+          border: "2px solid #000000",
+          boxShadow: "2px 2px 0px #000000",
+          borderRadius: 4,
+        }}
+      >
+        {children}
+      </div>
+    );
+  }
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {accent && (
@@ -128,12 +181,42 @@ export function HudCorner({
   color?: string;
   animated?: boolean;
 }) {
+  const theme = useActiveTheme();
+  if (theme === "neobrutalism") {
+    const pos: Record<string, CSSProperties> = {
+      tl: { top: 0, left: 0 },
+      tr: { top: 0, right: 0 },
+      bl: { bottom: 0, left: 0 },
+      br: { bottom: 0, right: 0 },
+    };
+    return (
+      <span
+        style={{
+          position: "absolute",
+          width: size,
+          height: size,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: size,
+          fontWeight: 900,
+          color: "#000000",
+          userSelect: "none",
+          ...pos[corner],
+        }}
+      >
+        +
+      </span>
+    );
+  }
+
   const base: CSSProperties = { position: "absolute", width: size, height: size };
+  const cornerColor = theme === "synthwave-sunset" ? "rgba(5, 217, 232, 0.7)" : color;
   const pos: Record<string, CSSProperties> = {
-    tl: { top: 0, left: 0, borderTop: `1.5px solid ${color}`, borderLeft: `1.5px solid ${color}`, borderTopLeftRadius: 6 },
-    tr: { top: 0, right: 0, borderTop: `1.5px solid ${color}`, borderRight: `1.5px solid ${color}`, borderTopRightRadius: 6 },
-    bl: { bottom: 0, left: 0, borderBottom: `1.5px solid ${color}`, borderLeft: `1.5px solid ${color}`, borderBottomLeftRadius: 6 },
-    br: { bottom: 0, right: 0, borderBottom: `1.5px solid ${color}`, borderRight: `1.5px solid ${color}`, borderBottomRightRadius: 6 },
+    tl: { top: 0, left: 0, borderTop: `1.5px solid ${cornerColor}`, borderLeft: `1.5px solid ${cornerColor}`, borderTopLeftRadius: 6 },
+    tr: { top: 0, right: 0, borderTop: `1.5px solid ${cornerColor}`, borderRight: `1.5px solid ${cornerColor}`, borderTopRightRadius: 6 },
+    bl: { bottom: 0, left: 0, borderBottom: `1.5px solid ${cornerColor}`, borderLeft: `1.5px solid ${cornerColor}`, borderBottomLeftRadius: 6 },
+    br: { bottom: 0, right: 0, borderBottom: `1.5px solid ${cornerColor}`, borderRight: `1.5px solid ${cornerColor}`, borderBottomRightRadius: 6 },
   };
   if (!animated) return <span style={{ ...base, ...pos[corner] }} />;
   const delay = { tl: 0, tr: 0.5, br: 1, bl: 1.5 }[corner];

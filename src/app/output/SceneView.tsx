@@ -1,4 +1,4 @@
-import { useTimer, useSceneConfig } from "../store/useBroadcast";
+import { useTimer, useSceneConfig, useActiveTheme, THEMES } from "../store/useBroadcast";
 import type { SceneId } from "../store/broadcastStore";
 import { appearanceVars } from "../components/overlay/sceneConfig";
 import { StartingSoon } from "../components/overlay/scenes/StartingSoon";
@@ -12,15 +12,17 @@ import { StreamEnding } from "../components/overlay/scenes/StreamEnding";
 // timer readouts. Used identically by the editor preview and the OBS output
 // pages so what you configure is exactly what streams.
 //
-// The scene's Appearance (accent + corner radius) is applied here as CSS custom
-// properties on the wrapper, so every child that reads var(--nc-primary) /
-// var(--nc-r-*) re-skins live — without touching any scene visuals.
+// The active theme (Cyber Esports, Neobrutalism, Minimal Zen, Synthwave Sunset)
+// is applied via `data-theme` attribute and CSS variable cascade to guarantee
+// complete live restyling in browser and OBS feeds without page reload.
 // ============================================================================
 
 export function SceneView({ scene }: { scene: SceneId }) {
   const startingTimer = useTimer("starting");
   const brbTimer = useTimer("brb");
   const config = useSceneConfig(scene);
+  const activeTheme = useActiveTheme();
+  const themeDef = THEMES[activeTheme];
 
   const body = () => {
     switch (scene) {
@@ -39,8 +41,13 @@ export function SceneView({ scene }: { scene: SceneId }) {
     }
   };
 
+  const combinedStyles = {
+    ...(themeDef?.cssVars ?? {}),
+    ...appearanceVars(config),
+  };
+
   return (
-    <div className="h-full w-full" style={appearanceVars(config)}>
+    <div className="h-full w-full" data-theme={activeTheme} style={combinedStyles}>
       {body()}
     </div>
   );

@@ -41,6 +41,83 @@
 
   /* Type */
   --nc-font: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --nc-border-width: 1px;
+}
+
+/* ==========================================================================
+   THEME SYSTEMS — Neobrutalism, Minimal Zen, Cyber Esports, Synthwave Sunset
+   ========================================================================== */
+
+[data-theme="neobrutalism"] {
+  --nc-primary: #fde047;
+  --nc-secondary: #ff5376;
+  --nc-accent: #38bdf8;
+  --nc-highlight: #09090b;
+  --nc-bg: #18181b;
+  --nc-bg-2: #27272a;
+  --nc-panel: #ffffff;
+  --nc-panel-2: #fef08a;
+  --nc-line: #000000;
+  --nc-line-strong: #000000;
+  --nc-line-brand: #000000;
+  --nc-text: #09090b;
+  --nc-text-2: #27272a;
+  --nc-text-3: #52525b;
+  --nc-r-sm: 4px;
+  --nc-r-md: 8px;
+  --nc-r-lg: 12px;
+  --nc-r-xl: 16px;
+  --nc-shadow: 6px 6px 0px #000000;
+  --nc-shadow-soft: 4px 4px 0px #000000;
+  --nc-border-width: 3px;
+}
+
+[data-theme="minimal-zen"] {
+  --nc-primary: #f59e0b;
+  --nc-secondary: #cbd5e1;
+  --nc-accent: #38bdf8;
+  --nc-highlight: #f8fafc;
+  --nc-bg: #08090c;
+  --nc-bg-2: #0f1117;
+  --nc-panel: rgba(20, 24, 33, 0.78);
+  --nc-panel-2: rgba(30, 36, 50, 0.7);
+  --nc-line: rgba(255, 255, 255, 0.07);
+  --nc-line-strong: rgba(255, 255, 255, 0.14);
+  --nc-line-brand: rgba(245, 158, 11, 0.45);
+  --nc-text: #f1f5f9;
+  --nc-text-2: #94a3b8;
+  --nc-text-3: #475569;
+  --nc-r-sm: 12px;
+  --nc-r-md: 18px;
+  --nc-r-lg: 28px;
+  --nc-r-xl: 36px;
+  --nc-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8);
+  --nc-shadow-soft: 0 6px 24px -10px rgba(0, 0, 0, 0.5);
+  --nc-border-width: 1px;
+}
+
+[data-theme="synthwave-sunset"] {
+  --nc-primary: #ff2a85;
+  --nc-secondary: #05d9e8;
+  --nc-accent: #ffbe0b;
+  --nc-highlight: #ffffff;
+  --nc-bg: #0e051f;
+  --nc-bg-2: #170a33;
+  --nc-panel: rgba(25, 11, 56, 0.88);
+  --nc-panel-2: rgba(36, 16, 79, 0.85);
+  --nc-line: rgba(255, 42, 133, 0.35);
+  --nc-line-strong: rgba(5, 217, 232, 0.55);
+  --nc-line-brand: rgba(255, 42, 133, 0.75);
+  --nc-text: #fdf4ff;
+  --nc-text-2: #d8b4fe;
+  --nc-text-3: #9333ea;
+  --nc-r-sm: 8px;
+  --nc-r-md: 14px;
+  --nc-r-lg: 20px;
+  --nc-r-xl: 28px;
+  --nc-shadow: 0 0 35px rgba(255, 42, 133, 0.35);
+  --nc-shadow-soft: 0 0 18px rgba(5, 217, 232, 0.25);
+  --nc-border-width: 1.5px;
 }
 
 :root {

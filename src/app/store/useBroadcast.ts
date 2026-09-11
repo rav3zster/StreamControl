@@ -94,3 +94,10 @@ export function useCustomLogo() {
     customLogoIcon: state.customLogoIcon,
   };
 }
+
+export function useActiveTheme() {
+  return useBroadcastState().activeTheme;
+}
+
+export { THEMES, THEME_LIST, type ThemeId } from "./themes";
+

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Copy, ExternalLink, Check, Radio, Lock, Unlock, Move, RotateCcw, Magnet } from "lucide-react";
+import { Copy, ExternalLink, Check, Radio, Lock, Unlock, Move, RotateCcw, Magnet, Palette } from "lucide-react";
 import { CanvasStage } from "../components/overlay/CanvasStage";
 import { Wordmark } from "../components/overlay/primitives";
 import { SceneView } from "../output/SceneView";
 import { ConfigPanel } from "./ConfigPanel";
-import { useBroadcastState, SCENE_LIST, sceneToSlug } from "../store/useBroadcast";
+import { useBroadcastState, SCENE_LIST, sceneToSlug, THEMES, THEME_LIST, type ThemeId } from "../store/useBroadcast";
 import { store } from "../store/broadcastStore";
 
 // ============================================================================
@@ -65,6 +65,8 @@ function UrlRow({ label, path }: { label: string; path: string }) {
 export function Editor() {
   const state = useBroadcastState();
   const active = state.activeScene;
+  const activeTheme = state.activeTheme;
+  const activeThemeDef = THEMES[activeTheme] ?? THEMES["cyber-esports"];
   const activeSlug = sceneToSlug(active);
   const scenePositions = state.widgetPositions[active] ?? {};
   const movedWidgetCount = Object.keys(scenePositions).length;
@@ -82,6 +84,34 @@ export function Editor() {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Quick Theme Selector in Top Bar */}
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold"
+            style={{
+              background: "rgba(255, 255, 255, 0.03)",
+              borderColor: "var(--nc-line-strong)",
+            }}
+          >
+            <Palette size={13} color="var(--nc-primary)" />
+            <span style={{ color: "var(--nc-text-3)", fontSize: 11 }}>Theme:</span>
+            <select
+              value={activeTheme}
+              onChange={(e) => store.setTheme(e.target.value as ThemeId, false)}
+              className="bg-transparent border-none text-xs font-bold cursor-pointer outline-none"
+              style={{ color: "var(--nc-highlight)" }}
+            >
+              {THEME_LIST.map((t) => (
+                <option key={t.id} value={t.id} style={{ background: "#12141c", color: "#ffffff" }}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+            <span
+              className="w-2.5 h-2.5 rounded-full border border-black/50 ml-1"
+              style={{ background: activeThemeDef.swatches[0] }}
+            />
+          </div>
+
           {/* Toggle Moveable Layout Button */}
           <button
             type="button"

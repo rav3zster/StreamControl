@@ -17,10 +17,11 @@
 // ============================================================================
 
 import { SCENE_SCHEMA, SOCIAL_PLATFORMS, type RadiusKey } from "./sceneSchema";
+import { type ThemeId, THEMES } from "./themes";
 
 export type SceneId = "starting" | "live" | "chatting" | "brb" | "ending";
 export type TimerKey = "starting" | "brb";
-export type { RadiusKey };
+export type { RadiusKey, ThemeId };
 
 export type TimerState = {
   target: number; // configured duration, seconds
@@ -74,6 +75,7 @@ export type WidgetPosition = WidgetTransform;
 
 export type BroadcastState = {
   activeScene: SceneId;
+  activeTheme: ThemeId;
   timers: Record<TimerKey, TimerState>;
   scenes: Record<SceneId, SceneConfig>;
   layoutEditMode: boolean;
@@ -130,6 +132,7 @@ function defaultScenes(): Record<SceneId, SceneConfig> {
 
 const DEFAULT_STATE: BroadcastState = {
   activeScene: "starting",
+  activeTheme: "cyber-esports",
   timers: { starting: makeTimer(600), brb: makeTimer(300) },
   scenes: defaultScenes(),
   layoutEditMode: false,
@@ -175,8 +178,10 @@ function load(): BroadcastState {
       acc[id] = { ...(parsed.widgetPositions?.[id] ?? {}) };
       return acc;
     }, {} as Record<SceneId, Record<string, WidgetTransform>>);
+    const validTheme = parsed.activeTheme && THEMES[parsed.activeTheme as ThemeId] ? (parsed.activeTheme as ThemeId) : "cyber-esports";
     return {
       activeScene: parsed.activeScene ?? DEFAULT_STATE.activeScene,
+      activeTheme: validTheme,
       timers: {
         starting: { ...DEFAULT_STATE.timers.starting, ...parsed.timers?.starting },
         brb: { ...DEFAULT_STATE.timers.brb, ...parsed.timers?.brb },
@@ -437,6 +442,54 @@ export const store = {
       ...state,
       widgetPositions: defaultPositions(),
     });
+  },
+
+  // --- theme actions ---
+  setTheme(themeId: ThemeId, applyLayoutPreset = false) {
+    if (!THEMES[themeId]) return;
+    let nextPositions = state.widgetPositions;
+    if (applyLayoutPreset) {
+      const presets = THEMES[themeId].layoutPresets;
+      const merged = { ...state.widgetPositions };
+      for (const scene of SCENE_IDS) {
+        if (presets[scene]) {
+          merged[scene] = { ...presets[scene] };
+        }
+      }
+      nextPositions = merged;
+    }
+    set({
+      ...state,
+      activeTheme: themeId,
+      widgetPositions: nextPositions,
+    });
+  },
+  applyThemeLayoutPreset(sceneId?: SceneId, themeId?: ThemeId) {
+    const targetTheme = themeId ?? state.activeTheme;
+    const presets = THEMES[targetTheme]?.layoutPresets;
+    if (!presets) return;
+
+    if (sceneId) {
+      const scenePreset = presets[sceneId] ?? {};
+      set({
+        ...state,
+        widgetPositions: {
+          ...state.widgetPositions,
+          [sceneId]: { ...scenePreset },
+        },
+      });
+    } else {
+      const merged = { ...state.widgetPositions };
+      for (const scene of SCENE_IDS) {
+        if (presets[scene]) {
+          merged[scene] = { ...presets[scene] };
+        }
+      }
+      set({
+        ...state,
+        widgetPositions: merged,
+      });
+    }
   },
 
   // --- custom logo actions ---

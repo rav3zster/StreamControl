@@ -1,10 +1,11 @@
-import { RotateCcw, SlidersHorizontal, Move } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Move, Palette } from "lucide-react";
 import { useSceneConfig, useTimer, useLayoutEditMode, useWidgetPositions, SCENE_LIST } from "../store/useBroadcast";
 import { store, type SceneId } from "../store/broadcastStore";
 import { SCENE_SCHEMA, SOCIAL_PLATFORMS, ACCENT_PRESETS, RADIUS_PRESETS } from "../store/sceneSchema";
 import { CollapsibleSection, TextField, TextArea, ToggleRow, Segmented, SwatchRow } from "./fields";
 import { CountdownControls } from "./CountdownControls";
 import { LogoUploader } from "./LogoUploader";
+import { ThemeSelector } from "./ThemeSelector";
 
 // ============================================================================
 // ConfigPanel — the right sidebar. Whenever a scene is selected it rebuilds to
@@ -41,8 +42,13 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
+        {/* THEMES & STREAM MOOD */}
+        <CollapsibleSection title="Stream Theme & Mood" subtitle="Neobrutalism, Minimal, Cyber, Retro" defaultOpen>
+          <ThemeSelector scene={scene} />
+        </CollapsibleSection>
+
         {/* GENERAL */}
-        <CollapsibleSection title="General" subtitle="Name, status, notes" defaultOpen>
+        <CollapsibleSection title="General" subtitle="Name, status, notes">
           <div className="flex flex-col gap-1">
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.18em", color: "var(--nc-text-3)", textTransform: "uppercase" }}>Scene Name</span>
             <span style={{ fontSize: 15, fontWeight: 600, color: "var(--nc-highlight)" }}>{meta.label}</span>
