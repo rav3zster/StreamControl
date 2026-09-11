@@ -281,10 +281,10 @@ export function MoveableWidget({
       className={`relative transition-shadow duration-150 ${className} ${
         editMode
           ? isDragging
-            ? "cursor-grabbing select-none"
+            ? "pointer-events-auto cursor-grabbing select-none"
             : isResizing
-            ? "select-none"
-            : "cursor-grab"
+            ? "pointer-events-auto select-none"
+            : "pointer-events-auto cursor-grab"
           : ""
       }`}
       style={{

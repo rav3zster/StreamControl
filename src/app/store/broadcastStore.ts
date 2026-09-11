@@ -229,10 +229,12 @@ function emit() {
 function syncToServer(stateToSend: BroadcastState) {
   if (typeof window === "undefined") return;
   try {
+    // Output feeds and OBS must never receive layoutEditMode: true
+    const payload = { ...stateToSend, layoutEditMode: false };
     fetch("/api/state", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(stateToSend),
+      body: JSON.stringify(payload),
     }).catch(() => {});
   } catch {}
 }
@@ -251,7 +253,11 @@ function set(next: BroadcastState, broadcast = true) {
 if (channel) {
   channel.onmessage = (e: MessageEvent<BroadcastState>) => {
     // Adopt peer state without re-broadcasting (avoids feedback loops).
-    state = e.data;
+    // Always preserve local layoutEditMode so peer updates don't close editor handles!
+    state = {
+      ...e.data,
+      layoutEditMode: state.layoutEditMode,
+    };
     persist();
     emit();
   };
@@ -281,7 +287,7 @@ if (typeof window !== "undefined") {
         state = {
           ...DEFAULT_STATE,
           ...serverState,
-          layoutEditMode: false,
+          layoutEditMode: state.layoutEditMode,
         };
         persist();
         emit();
@@ -302,7 +308,7 @@ if (typeof window !== "undefined") {
           state = {
             ...DEFAULT_STATE,
             ...data,
-            layoutEditMode: false,
+            layoutEditMode: state.layoutEditMode,
           };
           persist();
           emit();
@@ -411,17 +417,17 @@ export const store = {
   // --- layout edit & moveable widgets actions ---
   setLayoutEditMode(enabled: boolean) {
     if (state.layoutEditMode === enabled) return;
-    set({ ...state, layoutEditMode: enabled });
+    set({ ...state, layoutEditMode: enabled }, false);
   },
   toggleLayoutEditMode() {
-    set({ ...state, layoutEditMode: !state.layoutEditMode });
+    set({ ...state, layoutEditMode: !state.layoutEditMode }, false);
   },
   setSnapEnabled(enabled: boolean) {
     if (state.snapEnabled === enabled) return;
-    set({ ...state, snapEnabled: enabled });
+    set({ ...state, snapEnabled: enabled }, false);
   },
   toggleSnap() {
-    set({ ...state, snapEnabled: !state.snapEnabled });
+    set({ ...state, snapEnabled: !state.snapEnabled }, false);
   },
   setWidgetPosition(scene: SceneId, widgetKey: string, pos: { x: number; y: number }) {
     const scenePositions = { ...(state.widgetPositions[scene] ?? {}) };
