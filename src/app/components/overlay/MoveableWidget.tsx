@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Move, RotateCcw, Scaling, Layers, ChevronsUp, ChevronUp, ChevronDown, ChevronsDown } from "lucide-react";
 import { store, layerToZIndex, type SceneId, type WidgetTransform, type WidgetLayer } from "../../store/broadcastStore";
 import { useLayoutEditMode, useWidgetPosition, useWidgetPositions, useSnapEnabled } from "../../store/useBroadcast";
-import { useCanvasScale } from "./CanvasStage";
+import { useCanvasScale, useCanvasEditable } from "./CanvasStage";
 
 const LAYER_OPTIONS: { key: WidgetLayer; label: string; desc: string; icon: React.ReactNode }[] = [
   { key: "extreme-top", label: "Extreme Top", desc: "Topmost / in front of all widgets", icon: <ChevronsUp size={12} /> },
@@ -32,7 +32,11 @@ export function MoveableWidget({
   minWidth = 120,
   minHeight = 60,
 }: MoveableWidgetProps) {
-  const editMode = useLayoutEditMode();
+  const isCanvasEditable = useCanvasEditable();
+  const layoutEditMode = useLayoutEditMode();
+  // Selection and edit handles are ONLY active when CanvasStage explicitly allows editing AND layoutEditMode is ON.
+  // Output screens (OBS browser sources, /output, /output/:scene, standalone widgets) NEVER show selection outlines, badges, layer menus, or resize handles.
+  const editMode = Boolean(isCanvasEditable && layoutEditMode);
   const snapEnabled = useSnapEnabled();
   const savedTransform = useWidgetPosition(scene, id) as WidgetTransform;
   const allSceneWidgets = useWidgetPositions(scene);
@@ -42,6 +46,13 @@ export function MoveableWidget({
 
   // Layer menu state
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+
+  // Close layer menu immediately if editMode becomes false
+  useEffect(() => {
+    if (!editMode) {
+      setShowLayerMenu(false);
+    }
+  }, [editMode]);
 
   // Local drag/resize state for fluid 60fps rendering
   const [dragTransform, setDragTransform] = useState<WidgetTransform | null>(null);

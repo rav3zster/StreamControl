@@ -12,7 +12,16 @@ const H = 1080;
 export const CanvasScaleContext = createContext<number>(1);
 export const useCanvasScale = () => useContext(CanvasScaleContext);
 
-export function CanvasStage({ children }: { children: ReactNode }) {
+export const CanvasEditableContext = createContext<boolean>(false);
+export const useCanvasEditable = () => useContext(CanvasEditableContext);
+
+export function CanvasStage({
+  children,
+  editable = false,
+}: {
+  children: ReactNode;
+  editable?: boolean;
+}) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -45,7 +54,9 @@ export function CanvasStage({ children }: { children: ReactNode }) {
         className="relative shrink-0 overflow-hidden bg-nc-bg text-nc-text antialiased"
       >
         <CanvasScaleContext.Provider value={scale}>
-          {children}
+          <CanvasEditableContext.Provider value={editable}>
+            {children}
+          </CanvasEditableContext.Provider>
         </CanvasScaleContext.Provider>
       </div>
     </div>

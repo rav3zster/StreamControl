@@ -47,7 +47,7 @@ export function ProgramOutput() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <CanvasStage>
+          <CanvasStage editable={false}>
             <SceneView scene={state.activeScene} />
           </CanvasStage>
         </motion.div>
@@ -73,7 +73,7 @@ export function SceneOutput() {
 
   return (
     <Shell>
-      <CanvasStage>
+      <CanvasStage editable={false}>
         <SceneView scene={scene} />
       </CanvasStage>
     </Shell>

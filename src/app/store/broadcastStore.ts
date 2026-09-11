@@ -202,7 +202,7 @@ function load(): BroadcastState {
         brb: { ...DEFAULT_STATE.timers.brb, ...parsed.timers?.brb },
       },
       scenes,
-      layoutEditMode: Boolean(parsed.layoutEditMode ?? false),
+      layoutEditMode: false,
       snapEnabled: parsed.snapEnabled !== undefined ? Boolean(parsed.snapEnabled) : true,
       widgetPositions,
       customLogo: parsed.customLogo ?? null,

@@ -251,7 +251,7 @@ export function Editor() {
           <div className="relative w-full" style={{ aspectRatio: "16 / 9", flex: "1 1 auto", minHeight: 0, borderRadius: 20, overflow: "hidden", boxShadow: "var(--nc-shadow)", border: "1px solid var(--nc-line)" }}>
             <AnimatePresence mode="wait">
               <motion.div key={active} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}>
-                <CanvasStage>
+                <CanvasStage editable>
                   <SceneView scene={active} />
                 </CanvasStage>
               </motion.div>
