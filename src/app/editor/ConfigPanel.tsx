@@ -271,11 +271,14 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
               {/* Countdown Timer (if scene supports timer) */}
               {schema.hasCountdown && timer && (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--nc-text-3)]">
-                    <Tv size={12} color="var(--nc-primary)" />
-                    <span>Countdown Timer Transport</span>
-                  </div>
-                  <CountdownControls timer={timer} autoSwitchLabel={schema.autoSwitchLabel} />
+                  <CountdownControls
+                    timer={timer}
+                    autoSwitchLabel={schema.autoSwitchLabel}
+                    styleConfig={cfg.contentStyles?.["countdown"]}
+                    onStyleChange={(style) => store.sceneSetContentStyle(scene, "countdown", style)}
+                    onResetStyle={() => store.sceneResetContentStyle(scene, "countdown")}
+                    sceneId={scene}
+                  />
                 </div>
               )}
 

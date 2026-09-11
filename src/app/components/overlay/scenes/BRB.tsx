@@ -74,21 +74,43 @@ export function BRB({
           BACK
         </motion.span>
 
-        {on(config, "countdown") && (
-          <div className="mt-12 flex items-center gap-6">
-            <span style={{ width: 64, height: 1, background: "var(--nc-line-strong)" }} />
-            <div className="flex items-center gap-3">
-              <span style={{ fontSize: 15, color: "var(--nc-text-3)", letterSpacing: "0.14em" }}>BACK IN</span>
-              <motion.span
-                style={{ fontSize: 40, fontWeight: 700, color: "var(--nc-text)", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}
-                animate={{ opacity: running ? 1 : [1, 0.4, 1] }}
-                transition={{ duration: 1.4, repeat: running ? 0 : Infinity }}
-              >
-                {m}:{s}
-              </motion.span>
+        {on(config, "countdown") && (() => {
+          const timerStyle = config.contentStyles?.["countdown"];
+          const timerFontSize = timerStyle?.fontSize ? `${timerStyle.fontSize}px` : "40px";
+          const timerColor = timerStyle?.color || "var(--nc-primary)";
+          const timerFontWeight = timerStyle?.fontWeight ?? 700;
+          const timerFontStyle = timerStyle?.italic ? "italic" : "normal";
+          const timerAnim = timerStyle?.animation || "none";
+
+          return (
+            <div className="mt-12 flex items-center gap-6">
+              <span style={{ width: 64, height: 1, background: "var(--nc-line-strong)" }} />
+              <div className="flex items-center gap-3">
+                <span style={{ fontSize: 15, color: "var(--nc-text-3)", letterSpacing: "0.14em" }}>BACK IN</span>
+                <motion.span
+                  style={{
+                    fontSize: timerFontSize,
+                    fontWeight: timerFontWeight,
+                    color: timerColor,
+                    fontStyle: timerFontStyle,
+                    fontVariantNumeric: "tabular-nums",
+                    letterSpacing: "-0.01em",
+                  }}
+                  animate={
+                    timerAnim === "pulse"
+                      ? { opacity: [1, 0.45, 1], scale: [1, 1.04, 1] }
+                      : timerAnim === "bounce"
+                      ? { y: [0, -4, 0] }
+                      : { opacity: running ? 1 : [1, 0.4, 1] }
+                  }
+                  transition={{ duration: timerAnim === "pulse" ? 1.8 : 1.4, repeat: running && timerAnim === "none" ? 0 : Infinity }}
+                >
+                  {m}:{s}
+                </motion.span>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </MoveableWidget>
 
       {/* right info panel — keeps viewers company while paused */}
