@@ -38,10 +38,23 @@ export type SceneAppearance = {
   glass: boolean; // glassmorphism on panels
 };
 
+export type TextAnimationType = "none" | "marquee" | "pulse" | "shimmer" | "bounce";
+
+export type TextStyleConfig = {
+  fontSize?: number; // px
+  color?: string; // hex or css color
+  fontWeight?: number; // 400, 500, 600, 700, 800, 900
+  italic?: boolean;
+  uppercase?: boolean;
+  animation?: TextAnimationType;
+  marqueeSpeed?: number; // seconds per cycle
+};
+
 export type SceneConfig = {
   notes: string;
   widgets: Record<string, boolean>;
   content: Record<string, string>;
+  contentStyles?: Record<string, TextStyleConfig>;
   social: Record<string, boolean>;
   appearance: SceneAppearance;
   animations: boolean;
@@ -117,6 +130,7 @@ function defaultSceneConfig(scene: SceneId): SceneConfig {
     notes: "",
     widgets,
     content,
+    contentStyles: {},
     social,
     appearance: { accent: "#4f8cff", radius: "default", ambient: true, glass: true },
     animations: true,
@@ -150,7 +164,7 @@ const channel: BroadcastChannel | null =
   typeof BroadcastChannel !== "undefined" ? new BroadcastChannel(CHANNEL) : null;
 
 // Deep-merge persisted scene config over defaults so newly-added schema keys
-// (widgets/content/social) always exist even for older saved state.
+// (widgets/content/social/contentStyles) always exist even for older saved state.
 function mergeSceneConfig(scene: SceneId, saved: Partial<SceneConfig> | undefined): SceneConfig {
   const base = defaultSceneConfig(scene);
   if (!saved) return base;
@@ -158,6 +172,7 @@ function mergeSceneConfig(scene: SceneId, saved: Partial<SceneConfig> | undefine
     notes: saved.notes ?? base.notes,
     widgets: { ...base.widgets, ...saved.widgets },
     content: { ...base.content, ...saved.content },
+    contentStyles: { ...(saved.contentStyles ?? {}) },
     social: { ...base.social, ...saved.social },
     appearance: { ...base.appearance, ...saved.appearance },
     animations: saved.animations ?? base.animations,
@@ -268,6 +283,22 @@ export const store = {
   sceneSetContent(scene: SceneId, key: string, value: string) {
     const cfg = state.scenes[scene];
     set(patchScene(scene, { content: { ...cfg.content, [key]: value } }));
+  },
+  sceneSetContentStyle(scene: SceneId, key: string, style: Partial<TextStyleConfig>) {
+    const cfg = state.scenes[scene];
+    const prevStyle = cfg.contentStyles?.[key] ?? {};
+    set(patchScene(scene, {
+      contentStyles: {
+        ...(cfg.contentStyles ?? {}),
+        [key]: { ...prevStyle, ...style },
+      },
+    }));
+  },
+  sceneResetContentStyle(scene: SceneId, key: string) {
+    const cfg = state.scenes[scene];
+    const styles = { ...(cfg.contentStyles ?? {}) };
+    delete styles[key];
+    set(patchScene(scene, { contentStyles: styles }));
   },
   sceneSetSocial(scene: SceneId, key: string, on: boolean) {
     const cfg = state.scenes[scene];

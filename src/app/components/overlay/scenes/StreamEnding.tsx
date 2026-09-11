@@ -7,6 +7,7 @@ import { SCHEDULE, BRAND, SESSION_STATS } from "../data";
 import type { SceneConfig } from "../../../store/broadcastStore";
 import { on, pick } from "../sceneConfig";
 import { MoveableWidget } from "../MoveableWidget";
+import { StyledText } from "../StyledText";
 
 // ============================================================================
 // SCENE 05 — Stream Ending
@@ -64,18 +65,19 @@ export function StreamEnding({ config }: { config: SceneConfig }) {
             >
               THANK YOU FOR WATCHING
             </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-              style={{ fontSize: 132, fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 0.86, color: "var(--nc-highlight)", whiteSpace: "pre-line", display: "block" }}
-            >
-              {heading}
-            </motion.span>
+            <StyledText
+              text={heading}
+              styleConfig={config.contentStyles?.["heading"]}
+              defaultStyle={{ fontSize: 132, fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 0.86, color: "var(--nc-highlight)", whiteSpace: "pre-line", display: "block" }}
+            />
 
             <div className="mt-12 flex items-center gap-5">
               <span style={{ width: 56, height: 1, background: "var(--nc-line-strong)" }} />
-              <span style={{ fontSize: 15, color: "var(--nc-text-2)", letterSpacing: "0.03em" }}>{tagline}</span>
+              <StyledText
+                text={tagline}
+                styleConfig={config.contentStyles?.["tagline"]}
+                defaultStyle={{ fontSize: 15, color: "var(--nc-text-2)", letterSpacing: "0.03em" }}
+              />
             </div>
           </MoveableWidget>
 

@@ -7,6 +7,7 @@ import { BRAND, LATEST } from "../data";
 import type { SceneConfig } from "../../../store/broadcastStore";
 import { on, pick } from "../sceneConfig";
 import { MoveableWidget } from "../MoveableWidget";
+import { StyledText } from "../StyledText";
 
 // ============================================================================
 // SCENE 01 — Starting Soon
@@ -116,12 +117,18 @@ export function StartingSoon({
 
           {on(config, "streamTitle") && (
             <MoveableWidget scene="starting" id="streamTitle" label="Stream Title" className="mt-12 flex flex-col items-center gap-4">
-              <span style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--nc-highlight)" }}>
-                {title}
-              </span>
+              <StyledText
+                text={title}
+                styleConfig={config.contentStyles?.["title"]}
+                defaultStyle={{ fontSize: 30, fontWeight: 700, letterSpacing: "-0.02em", color: "var(--nc-highlight)" }}
+              />
               <div className="flex items-center gap-3">
                 <span style={{ width: 30, height: 1, background: "var(--nc-line-strong)" }} />
-                <span style={{ fontSize: 14, color: "var(--nc-text-2)", letterSpacing: "0.04em" }}>{tagline}</span>
+                <StyledText
+                  text={tagline}
+                  styleConfig={config.contentStyles?.["tagline"]}
+                  defaultStyle={{ fontSize: 14, color: "var(--nc-text-2)", letterSpacing: "0.04em" }}
+                />
                 <span style={{ width: 30, height: 1, background: "var(--nc-line-strong)" }} />
               </div>
             </MoveableWidget>

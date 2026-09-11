@@ -6,6 +6,7 @@ import { CollapsibleSection, TextField, TextArea, ToggleRow, Segmented, SwatchRo
 import { CountdownControls } from "./CountdownControls";
 import { LogoUploader } from "./LogoUploader";
 import { ThemeSelector } from "./ThemeSelector";
+import { ContentTextField } from "./ContentTextField";
 
 // ============================================================================
 // ConfigPanel — the right sidebar. Whenever a scene is selected it rebuilds to
@@ -151,12 +152,15 @@ export function ConfigPanel({ scene }: { scene: SceneId }) {
                   onChange={(v) => store.sceneSetContent(scene, c.key, v)}
                 />
               ) : (
-                <TextField
+                <ContentTextField
                   key={c.key}
                   label={c.label}
                   value={cfg.content[c.key] ?? ""}
                   placeholder={c.placeholder}
+                  styleConfig={cfg.contentStyles?.[c.key]}
                   onChange={(v) => store.sceneSetContent(scene, c.key, v)}
+                  onStyleChange={(style) => store.sceneSetContentStyle(scene, c.key, style)}
+                  onResetStyle={() => store.sceneResetContentStyle(scene, c.key)}
                 />
               )
             )}

@@ -10,6 +10,7 @@ import { GOALS } from "../data";
 import type { SceneConfig } from "../../../store/broadcastStore";
 import { on, pick } from "../sceneConfig";
 import { MoveableWidget } from "../MoveableWidget";
+import { StyledText } from "../StyledText";
 
 // ============================================================================
 // SCENE 03 — Just Chatting
@@ -52,9 +53,11 @@ export function JustChatting({ config }: { config: SceneConfig }) {
                 {on(config, "topic") && (
                   <div className="flex flex-col gap-2">
                     <SectionLabel>Topic</SectionLabel>
-                    <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--nc-highlight)" }}>
-                      {topic}
-                    </span>
+                    <StyledText
+                      text={topic}
+                      styleConfig={config.contentStyles?.["topic"]}
+                      defaultStyle={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--nc-highlight)" }}
+                    />
                   </div>
                 )}
                 {on(config, "sponsor") && <SponsorBanner />}
